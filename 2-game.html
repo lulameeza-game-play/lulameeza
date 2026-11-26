@@ -295,6 +295,22 @@ body{overflow-x:hidden}
 .sun{box-shadow:0 0 6cqw #f2b632aa}
 @media (prefers-reduced-motion:reduce){.tok,.card{animation:none!important}}
 </style>
+<style id="gfx2">
+.hs{background:linear-gradient(180deg,#f0453b 0 42%,#b3241d 42% 46%,#f7ead0 46% 100%);filter:drop-shadow(0 .2cqw .15cqw #0008)}
+.ht{background:linear-gradient(180deg,#ff7a8c,#c1213a);background-image:radial-gradient(circle at 25% 40%,#ffe9a0 0 .22cqw,transparent .25cqw),radial-gradient(circle at 50% 40%,#ffe9a0 0 .22cqw,transparent .25cqw),radial-gradient(circle at 75% 40%,#ffe9a0 0 .22cqw,transparent .25cqw),linear-gradient(180deg,#ff7a8c,#c1213a);box-shadow:0 .25cqw 0 #6d0f1f,0 0 .8cqw #ffd86a88}
+.hs.new,.ht.new{animation:dropIn .75s cubic-bezier(.25,1.6,.5,1) both,glowB 1.4s ease-out .1s 1}
+@keyframes dropIn{0%{transform:translateY(-9cqw) scale(1.8) rotate(-12deg);opacity:0}55%{opacity:1}75%{transform:translateY(.5cqw) scale(.85,1.15)}100%{transform:none}}
+@keyframes glowB{0%{filter:drop-shadow(0 0 1.4cqw #fff) brightness(1.8)}100%{filter:drop-shadow(0 .2cqw .15cqw #0008)}}
+.tile.hl{animation:hl2 1s ease-out 1;position:relative;z-index:4}
+@keyframes hl2{0%{transform:scale(1)}20%{transform:scale(1.22);filter:brightness(1.6);box-shadow:0 0 2.5cqw #ffd86a}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+@media (min-width:1000px) and (hover:hover){
+ .boardwrap{perspective:1900px;perspective-origin:50% 35%}
+ .board{transform:rotateX(11deg) scale(.97);transform-origin:50% 70%;box-shadow:0 1.2cqw 0 #6b4a05,0 2.4cqw 0 #3d2a03,0 4cqw 5cqw #000c,0 0 0 4px #f2b632,0 0 40px -6px #f2b63255!important}
+}
+.tok{transition:left .3s cubic-bezier(.3,1.4,.5,1),top .3s cubic-bezier(.3,1.4,.5,1),filter .2s}
+@media (prefers-reduced-motion:reduce){.hs.new,.ht.new,.tile.hl{animation:none!important}.board{transform:none!important}}
+</style>
+
 
 <script>
 /* ====== اتصال مستقل عبر WebRTC (PeerJS) مع اكتشاف تلقائي للغرفة وتوريث المضيف ====== */
