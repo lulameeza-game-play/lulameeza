@@ -288,12 +288,12 @@ body{overflow-x:hidden}
   const emit=(e,...a)=>(ev[e]||[]).slice().forEach(f=>{try{f(...a);}catch(x){}});
   const code=String(idHint).split('-')[1]||'X';
   const id='m'+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
-  self.id=id;
+  self.id=id;window.__MP=self;self.ev=[];const LG=(...a)=>{self.ev.push([Date.now()%1000000,...a]);};self.stat={out:0,in:0,lastIn:0,reconn:0,off:0};
   const base='lulameeza-v1/'+code,lobby=base+'/lobby',mine=base+'/to/'+id;
   const seen=new Map(),conns=new Map();
   let cli=null,closed=false,hb=null,opened=false;
   self.known=()=>[...seen.keys()];
-  const pub=(t,o)=>{try{if(cli&&cli.connected)cli.publish(t,JSON.stringify(o),{qos:0});}catch(e){}};
+  const pub=(t,o)=>{try{self.stat.out++;if(cli&&cli.connected)cli.publish(t,JSON.stringify(o),{qos:1});}catch(e){}};
   const touch=r=>{if(r&&r!==id)seen.set(r,Date.now());};
   function mkConn(rid){
    const cev={};
@@ -303,7 +303,7 @@ body{overflow-x:hidden}
     close(){if(c.dead)return;if(c.open)pub(base+'/to/'+rid,{k:'x',f:id});kill();},
     _e(e,...a){(cev[e]||[]).slice().forEach(f=>{try{f(...a);}catch(x){}});},
     _open(){if(c.open||c.dead)return;c.open=true;c._e('open');}};
-   function kill(){if(c.dead)return;c.dead=true;const was=c.open;c.open=false;if(conns.get(rid)===c)conns.delete(rid);c._e('close');}
+   function kill(){if(c.dead)return;LG('kill',rid);c.dead=true;const was=c.open;c.open=false;if(conns.get(rid)===c)conns.delete(rid);c._e('close');}
    c._kill=kill;conns.set(rid,c);return c;
   }
   self.connect=rid=>{
@@ -319,7 +319,7 @@ body{overflow-x:hidden}
    if(!m||!m.f||m.f===id)return;
    touch(m.f);
    if(topic===lobby){
-    if(m.k==='bye'){seen.delete(m.f);const c=conns.get(m.f);if(c)c._kill();}
+    if(m.k==='bye'){LG('bye',m.f);seen.delete(m.f);const c=conns.get(m.f);if(c)c._kill();}
     return;
    }
    if(m.k==='syn'){
@@ -328,16 +328,17 @@ body{overflow-x:hidden}
     else setTimeout(()=>c._open(),0);
     pub(base+'/to/'+m.f,{k:'ack',f:id});
    }else if(m.k==='ack'){const c=conns.get(m.f);if(c)c._open();}
-   else if(m.k==='d'){const c=conns.get(m.f);if(c&&c.open)c._e('data',m.m);else pub(base+'/to/'+m.f,{k:'x',f:id});}
-   else if(m.k==='x'){const c=conns.get(m.f);if(c)c._kill();}
+   else if(m.k==='d'){const c=conns.get(m.f);if(c&&c.open)c._e('data',m.m);else{LG('DROPd',m.f,!!c,c&&c.open);pub(base+'/to/'+m.f,{k:'x',f:id});}}
+   else if(m.k==='x'){LG('Xrecv',m.f);const c=conns.get(m.f);if(c)c._kill();}
   };
   try{
    cli=mqtt.connect(cfg.url,{clientId:'lz_'+id,clean:true,reconnectPeriod:2000,connectTimeout:7000,keepalive:20,
     will:{topic:lobby,payload:JSON.stringify({k:'bye',f:id}),qos:0}});
   }catch(e){setTimeout(()=>emit('error',{type:'network'}),0);return;}
-  cli.on('message',onMsg);
+  cli.on('message',(t,b)=>{self.stat.in++;self.stat.lastIn=Date.now();onMsg(t,b);});
+  cli.on('reconnect',()=>self.stat.reconn++);cli.on('offline',()=>self.stat.off++);cli.on('close',()=>{self.stat.closed=(self.stat.closed||0)+1;});
   cli.on('connect',()=>{
-   cli.subscribe([lobby,mine],{qos:0},err=>{
+   cli.subscribe([lobby,mine],{qos:1},err=>{
     if(err){if(!opened)emit('error',{type:'network'});return;}
     pub(lobby,{k:'here',f:id});
     if(!opened){opened=true;emit('open',id);
@@ -345,7 +346,7 @@ body{overflow-x:hidden}
       if(closed)return;
       pub(lobby,{k:'here',f:id});
       const now=Date.now();
-      seen.forEach((t,r)=>{if(now-t>9000){seen.delete(r);const c=conns.get(r);if(c)c._kill();}});
+      seen.forEach((t,r)=>{if(now-t>9000){LG('stale',r);seen.delete(r);const c=conns.get(r);if(c)c._kill();}});
       conns.forEach((c,r)=>{if(c.open&&now-(seen.get(r)||0)>9000)c._kill();});
      },2000);}
    });
@@ -387,6 +388,7 @@ body{overflow-x:hidden}
   };
 
   const deliver=(topic,data,from)=>{
+   (window.__LOG=window.__LOG||[]).push([Date.now()%1000000,topic,from===myId?'me':'rem',topic==='pr'?JSON.stringify(data).slice(0,80):'']);
    (L[topic]||[]).slice().forEach(f=>{
     try{f({peer:from,topic,data,isMe:from===myId,sameTab:from===myId,kind:'viewer',by:null,guest:false});}catch(e){}
    });
@@ -1425,7 +1427,8 @@ function remotePrompt(p,spec){
  return new Promise(res=>{
   const id=++NET.pid;
   NET.pend.set(id,{peer:p.peer,res,btns:spec.btns,kind:spec.kind});
-  netSend('pr',Object.assign({id,to:p.peer},spec));
+  const msg=Object.assign({id,to:p.peer},spec);netSend('pr',msg);
+  const tm=setInterval(()=>{if(!NET.pend.has(id)||!NET.on){clearInterval(tm);return;}netSend('pr',msg);},3500);
  });
 }
 function chooseAsk(p,html,btns,deed){
@@ -2030,7 +2033,11 @@ async function netJoin(code){
   if(d.k==='cut'||d.k==='card'||d.k==='over'){FX[d.k](...d.a);}else FX[d.k](...d.a);
  }));
  NETOFF.push(ROOM.on('pr',m=>{
-  if(m.data&&m.data.to===NET.peer)onPrompt(m.data);
+  const d=m.data;if(!d||d.to!==NET.peer)return;
+  NET.seenPr=NET.seenPr||new Map();const key=m.peer+':'+d.id,old=NET.seenPr.get(key);
+  if(old){if(old.done)netSend('an',{id:d.id,v:old.v});return;}
+  NET.seenPr.set(key,{done:false});
+  onPrompt(d).then(v=>{NET.seenPr.set(key,{done:true,v});});
  }));
  NETOFF.push(ROOM.on('rx',m=>{
   const d=m.data||{};if(S)FX.rx(String(d.e||'🙂').slice(0,4),String(d.n||'').slice(0,14));
@@ -2045,6 +2052,7 @@ async function netJoin(code){
  return 'ok';
 }
 
+setInterval(()=>{if(NET.on&&NET.host&&S&&!S.over)netSend('st',snapshot());},4000);
 function onPeerLeft(peer){
  if(!NET.host||!S)return;
  const p=S.pl.find(x=>x.peer===peer&&!x.cpu);
@@ -2069,7 +2077,7 @@ async function onPrompt(d){
   else if(d.kind==='acts')v=await setActs(d.btns);
   else if(d.kind==='man'){const me=S.pl[NET.seat];v=me?await manageUI(me,d.need||0,true):'ok';}
  }catch(e){v=undefined;}
- netSend('an',{id:d.id,v});
+ netSend('an',{id:d.id,v});setTimeout(()=>netSend('an',{id:d.id,v}),1500);return v;
 }
 
 function renderLobby(){
