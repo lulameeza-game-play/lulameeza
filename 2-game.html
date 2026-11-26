@@ -252,42 +252,107 @@ body{background-attachment:fixed}
 .a-hover{animation:floaty 2.6s ease-in-out infinite}
 @keyframes floaty{50%{transform:translateY(-12px)}}
 </style>
+<style id="resp">
+.pwrap{height:min(55dvh,520px);overflow:auto;border-radius:10px;display:block}
+.ptab{width:100%;border-collapse:collapse;font-size:13px;background:#14294a;color:var(--ink)}.ptab td,.ptab th{padding:5px 6px;text-align:center;border-bottom:1px solid #ffffff14}.ptab td:first-child{text-align:right}
+.ptab th{position:sticky;top:0;background:#16294a}.ptab .gh td{font-weight:700}
+.sheet{max-height:92dvh;overflow:auto;-webkit-overflow-scrolling:touch}
+.btn,.rxb{touch-action:manipulation;min-height:42px}
+body{overflow-x:hidden}
+@media(max-width:700px){
+ body{font-size:15px}
+ .app{gap:10px}
+ .btn{padding:10px 14px}
+ .modal .sheet{width:calc(100vw - 16px);padding:12px}
+ .deed{font-size:14px}
+ .box{padding:10px}
+ .ptab{font-size:12px}
+}
+</style>
 <script>
 /* ====== اتصال مستقل عبر WebRTC (PeerJS) مع اكتشاف تلقائي للغرفة وتوريث المضيف ====== */
 (function(){
  window.STANDALONE=true;
- const CFGS=[
-  {
-   host:'0.peerjs.com',
-   secure:true,
-   port:443,
-   config:{iceServers:[
-    {urls:'stun:stun.l.google.com:19302'},
-    {urls:'stun:stun1.l.google.com:19302'},
-    {urls:'stun:global.stun.twilio.com:3478'},
-    {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}
-   ]}
-  },
-  {
-   secure:true,
-   config:{iceServers:[
-    {urls:'stun:stun.l.google.com:19302'},
-    {urls:'stun:stun2.l.google.com:19302'}
-   ]}
-  }
- ];
+ const CFGS=[{url:'wss://broker.emqx.io:8084/mqtt'},{url:'wss://broker.hivemq.com:8884/mqtt'},{url:'wss://test.mosquitto.org:8081/'}];
+ const MQTT_SRC=['https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js','https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js'];
  const err=(code,message)=>({code,message:message||code});
  function load(){
-  if(window.Peer)return Promise.resolve();
-  return new Promise((res,rej)=>{
-   const s=document.createElement('script');
-   s.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';
-   s.onload=res;
-   s.onerror=()=>rej(err('upstream_error','peerjs'));
-   document.head.appendChild(s);
-  });
+  if(window.mqtt)return Promise.resolve();
+  const one=src=>new Promise((res,rej)=>{const t=document.createElement('script');t.src=src;t.onload=res;t.onerror=()=>rej(err('upstream_error','mqtt'));document.head.appendChild(t);});
+  return one(MQTT_SRC[0]).catch(()=>one(MQTT_SRC[1]));
  }
-
+ /* نقل الرسائل عبر وسيط MQTT عام (بدون WebRTC عشان يشتغل على شبكات الموبايل) */
+ function MPeer(idHint,cfg){
+  const self=this,ev={};
+  self.on=(e,f)=>{(ev[e]=ev[e]||[]).push(f);return self;};
+  const emit=(e,...a)=>(ev[e]||[]).slice().forEach(f=>{try{f(...a);}catch(x){}});
+  const code=String(idHint).split('-')[1]||'X';
+  const id='m'+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
+  self.id=id;
+  const base='lulameeza-v1/'+code,lobby=base+'/lobby',mine=base+'/to/'+id;
+  const seen=new Map(),conns=new Map();
+  let cli=null,closed=false,hb=null,opened=false;
+  self.known=()=>[...seen.keys()];
+  const pub=(t,o)=>{try{if(cli&&cli.connected)cli.publish(t,JSON.stringify(o),{qos:0});}catch(e){}};
+  const touch=r=>{if(r&&r!==id)seen.set(r,Date.now());};
+  function mkConn(rid){
+   const cev={};
+   const c={peer:rid,open:false,dead:false,
+    on(e,f){(cev[e]=cev[e]||[]).push(f);return c;},
+    send(m){if(!closed)pub(base+'/to/'+rid,{k:'d',f:id,m});},
+    close(){if(c.dead)return;if(c.open)pub(base+'/to/'+rid,{k:'x',f:id});kill();},
+    _e(e,...a){(cev[e]||[]).slice().forEach(f=>{try{f(...a);}catch(x){}});},
+    _open(){if(c.open||c.dead)return;c.open=true;c._e('open');}};
+   function kill(){if(c.dead)return;c.dead=true;const was=c.open;c.open=false;if(conns.get(rid)===c)conns.delete(rid);c._e('close');}
+   c._kill=kill;conns.set(rid,c);return c;
+  }
+  self.connect=rid=>{
+   const old=conns.get(rid);
+   if(old&&old.open)return old;
+   if(old){old.dead=true;conns.delete(rid);}
+   const c=mkConn(rid);
+   pub(base+'/to/'+rid,{k:'syn',f:id});
+   return c;
+  };
+  const onMsg=(topic,buf)=>{
+   let m;try{m=JSON.parse(buf.toString());}catch(e){return;}
+   if(!m||!m.f||m.f===id)return;
+   touch(m.f);
+   if(topic===lobby){
+    if(m.k==='bye'){seen.delete(m.f);const c=conns.get(m.f);if(c)c._kill();}
+    return;
+   }
+   if(m.k==='syn'){
+    let c=conns.get(m.f);
+    if(!c||c.dead){c=mkConn(m.f);emit('connection',c);setTimeout(()=>c._open(),0);}
+    else setTimeout(()=>c._open(),0);
+    pub(base+'/to/'+m.f,{k:'ack',f:id});
+   }else if(m.k==='ack'){const c=conns.get(m.f);if(c)c._open();}
+   else if(m.k==='d'){const c=conns.get(m.f);if(c&&c.open)c._e('data',m.m);else pub(base+'/to/'+m.f,{k:'x',f:id});}
+   else if(m.k==='x'){const c=conns.get(m.f);if(c)c._kill();}
+  };
+  try{
+   cli=mqtt.connect(cfg.url,{clientId:'lz_'+id,clean:true,reconnectPeriod:2000,connectTimeout:7000,keepalive:20,
+    will:{topic:lobby,payload:JSON.stringify({k:'bye',f:id}),qos:0}});
+  }catch(e){setTimeout(()=>emit('error',{type:'network'}),0);return;}
+  cli.on('message',onMsg);
+  cli.on('connect',()=>{
+   cli.subscribe([lobby,mine],{qos:0},err=>{
+    if(err){if(!opened)emit('error',{type:'network'});return;}
+    pub(lobby,{k:'here',f:id});
+    if(!opened){opened=true;emit('open',id);
+     hb=setInterval(()=>{
+      if(closed)return;
+      pub(lobby,{k:'here',f:id});
+      const now=Date.now();
+      seen.forEach((t,r)=>{if(now-t>9000){seen.delete(r);const c=conns.get(r);if(c)c._kill();}});
+      conns.forEach((c,r)=>{if(c.open&&now-(seen.get(r)||0)>9000)c._kill();});
+     },2000);}
+   });
+  });
+  cli.on('error',()=>{if(!opened)emit('error',{type:'network'});});
+  self.destroy=()=>{closed=true;clearInterval(hb);try{pub(lobby,{k:'bye',f:id});cli.end(true);}catch(e){}};
+ }
  async function join(roomCode){
   await load();
   const cleanCode=String(roomCode).replace(/^bk-/i,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
@@ -298,7 +363,7 @@ body{background-attachment:fixed}
   let myId=null,dead=false,peer=null,myPres={};
   let isActingHost=false;
 
-  const list=()=>[...peers.entries()]
+  const list=()=>[...peers.entries()].filter(([id,p])=>id===myId||(p.presence&&p.presence.name))
    .sort((a,b)=>(a[1].joinedAt||0)-(b[1].joinedAt||0)||a[0].localeCompare(b[0]))
    .map(([id,p])=>({
     peer:id,
@@ -460,7 +525,7 @@ body{background-attachment:fixed}
      else reject(err('upstream_error','timeout'));
     },8000);
     const idToTry=idx<slotCandidates.length?slotCandidates[idx]:`lmr-${cleanCode}-${Math.random().toString(36).slice(2,7)}`;
-    const p=new Peer(idToTry,cfg);
+    const p=new MPeer(idToTry,cfg);
     let settled=false;
     p.on('error',e=>{
      if(settled)return;
@@ -503,9 +568,14 @@ body{background-attachment:fixed}
   peer.on('connection',c=>attachConn(c,c.peer));
 
   const hashPeer=decodeURIComponent((location.hash||'').replace(/^#host-/,''));
-  const discoverTargets=()=>new Set([...slotCandidates,hashPeer,...peers.keys()].filter(x=>x&&x!==myId));
+  const discoverTargets=()=>new Set([...(peer&&peer.known?peer.known():[]),...peers.keys()].filter(x=>x&&x!==myId));
 
+  const nap=ms=>new Promise(r=>setTimeout(r,ms));
+  const t0=Date.now();
+  while(Date.now()-t0<3200&&!(peer.known&&peer.known().length))await nap(200);
   discoverTargets().forEach(t=>connectTo(t));
+  if(peer.known&&peer.known().length)await nap(1800);
+  electHost();
 
   const probeTimer=setInterval(()=>{
    if(dead)return clearInterval(probeTimer);
@@ -575,8 +645,8 @@ body{background-attachment:fixed}
 <script>
 'use strict';
 const $=(s,r=document)=>r.querySelector(s);
-const money=n=>Number(n).toLocaleString('ar-EG')+' ج';
-const num=n=>Number(n).toLocaleString('ar-EG');
+const money=n=>Number(n).toLocaleString('en-US')+' ج';
+const num=n=>Number(n).toLocaleString('en-US');
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -633,7 +703,7 @@ const TILES=[
  P('شرم الشيخ',400,'db','مدينة السلام','🐠','مدينة السلام','اشتريت شرم الشيخ.. قاعد في فندق ببلاش! أه والله، لحد ما تيجي الفاتورة.')
 ];
 TILES[25]=P('الفيوم',260,'yl','السواقي والبط','🦆','السواقي','السواقي بتلف على فلوسك.. والبط بيقول كواك على كل جنيه.');
-TILES.forEach((t,i)=>{t.i=i;if(t.t==='prop'){const b=Math.max(2,Math.round(t.p*0.08/2)*2);t.rent=[b,b*5,b*15,b*40,b*60,b*80];t.hc=GR[t.g].h;}});
+TILES.forEach((t,i)=>{t.i=i;if(t.t==='prop'){const b=Math.max(5,Math.round(t.p*0.08/5)*5);t.rent=[b,b*5,b*15,b*40,b*60,b*80];t.hc=GR[t.g].h;}});
 const FEMO={'بولاق الدكرور':'🛺','إمبابة':'🌉','الزقازيق':'🐎','بنها':'🍯','بورسعيد':'🚢','أسيوط':'🥘','سوهاج':'🧣','المنيا':'👰','الفيوم':'🦆','بني سويف':'🏭','الإسماعيلية':'⛵','الغردقة':'🤿','أسوان':'🌺','الأقصر':'🏛️','الإسكندرية':'🌊','شرم الشيخ':'🐠','شبرا':'🍲','المطرية':'🌳','عين شمس':'🎓','دمياط':'🛋️','المنصورة':'🥧','طنطا':'🎪'};
 TILES.forEach(t=>{if(t.t==='prop'&&FEMO[t.n])t.fe=FEMO[t.n];});
 const GROUP_TILES=g=>TILES.filter(t=>t.g===g);
@@ -1014,6 +1084,18 @@ function arSpeechText(s){
   .replace(/\s+/g,' ').trim();
 }
 const AUDIO_MAP={
+ "الأسطى قالك: \"الحيطة مايلة شوية\".. وبعدين ضحك وقالك: \"دي ميلة هندسية يا باشا\".": "audio/1-n01.mp3",
+ "العامل نزل يجيب أسمنت من الصبح.. ولسه راجع الساعة سبعة بكيس شيبسي.": "audio/2-n02.mp3",
+ "الجار طلع على السطح يتفرج وبقاله ساعتين بيدّي نصايح هندسية مجانية.": "audio/3-n03.mp3",
+ "الجراج اتفتح! أول عربية دخلت فيه كانت توكتوك الجيران.": "audio/4-n04.mp3",
+ "الأسطى قالك: \"الجراج يساع عربيتين\".. ودخلت فيه عربية ونص ودراجة وعفش الدور اللي فوق.": "audio/5-n05.mp3",
+ "جراج جديد! ودلوقتي هتعرف يعني إيه \"ركنة صف تالت\" بجد.": "audio/6-n06.mp3",
+ "الجراج جاهز.. وأول حاجة تتحط فيه هي الكراكيب اللي كانت في الصالة.": "audio/7-n07.mp3",
+ "بنيت جراج.. والعربية لسه ما اشتريتهاش، بس المهم البريستيج!": "audio/8-n08.mp3",
+ "نصيحة: الجراج بيتبني مع البيت التالت.. وبعده البيت الرابع ثم الفندق.": "audio/9-n09.mp3",
+ "نصيحة من الحاجة نوال: ما تثقش في حد بيقولك \"سلفني بكرة أرجعهالك\".": "audio/10-n10.mp3",
+ "نصيحة: لو الفلوس قربت تخلص، الرهن أحسن من إنك تفلّس قدام الشباب.": "audio/11-n11.mp3",
+ "نصيحة: اللي بيضحك في الأول بيدفع إيجار في الآخر.": "audio/12-n12.mp3",
  "أحلى قعدة في الدنيا.. شاي وراحة بال وضحك على الفاضي.": "audio/4-a001.mp3",
  "أكل آخر حتة في الصينية والادعاء إن حد تاني أكلها ومشي": "audio/5-a002.mp3",
  "اتعزمت على غدا \"خفيف\".. لقيت صينية تكفي حي كامل وبتسمع جملة: \"إنت لسه مأكلتش حاجة!\"": "audio/6-a003.mp3",
@@ -1317,14 +1399,15 @@ function renderPanel(){
  const v=viewer();
  el.innerHTML='<div class="box"><h3 class="h">اللاعبين'+(NET.on?` · غرفة ${esc(NET.code)}${NET.host?' (مضيف نشط)':''}`:'')+'</h3><div class="pl">'+S.pl.map(p=>
   `<div class="pc ${p===cur()&&!p.out?'me':''} ${p.out?'out':''}" style="--pcol:${PCOL[p.id]}"><span class="tk">${p.tok.e}</span><div><b>${esc(p.name)}${p.cpu?' 🤖':(NET.on?' 🌐':'')}${v&&p.id===v.id&&NET.on?' (أنت)':''}</b><small>${mine(p).length} ملك${p.jail?' · 🔒 في القسم':''}${p.free?' · 🎫 واسطة':''}${p.out?' · فلّس':''}</small></div><span class="cash">${money(p.cash)}</span></div>`).join('')+'</div></div>'+
-  '<div class="box"><div class="row"><button class="btn alt sm" id="bMan">🏗️ ممتلكاتي</button><button class="btn alt sm" id="bSet">⚙️ إعدادات</button><button class="btn alt sm" id="bHelp">❓ تلميحة</button></div>'+
+  '<div class="box"><div class="row"><button class="btn alt sm" id="bMan">🏗️ ممتلكاتي</button><button class="btn alt sm" id="bSet">⚙️ إعدادات</button><button class="btn alt sm" id="bHelp">❓ تلميحة</button><button class="btn alt sm" id="bPrices">💰 الأسعار</button></div>'+
   '<div class="rxrow">'+['😂','👏','😡','💸','🔥','🙏'].map(e=>`<button class="rxb" data-e="${e}" aria-label="تفاعل ${e}">${e}</button>`).join('')+'</div>'+
   `<p class="tip" id="tip" style="margin:8px 0 0">${esc(S.tip||TIPS[0])}</p></div>`+
   '<div class="box"><h3 class="h">آخر الأحداث</h3><div class="log" id="log"></div></div>';
  renderLog();
  $('#bMan').onclick=()=>openMyManage();
  $('#bSet').onclick=settings;
- $('#bHelp').onclick=()=>{S.tip=rnd(TIPS);const t=$('#tip');if(t)t.textContent=S.tip;};
+ $('#bHelp').onclick=()=>{S.tip=rnd(TIPS);const t=$('#tip');if(t)t.textContent=S.tip;if(SET.voice&&findAudioFile(S.tip))say(S.tip,VOICES.host);};
+ $('#bPrices').onclick=showPrices;
  el.querySelectorAll('.rxb').forEach(b=>b.onclick=()=>{const nm=v?v.name:'';if(NET.on)netSend('rx',{e:b.dataset.e,n:nm});else FX.rx(b.dataset.e,nm);});
 }
 function renderLog(){const l=$('#log');if(l&&S)l.innerHTML=S.log.slice(0,25).map(x=>'<div>'+esc(x)+'</div>').join('');}
@@ -1377,11 +1460,16 @@ function deedHTML(t){
  const fame=t.fe?`<div class="fame"><span>${t.fe}</span><div><b>مشهورة بـ ${t.fl}</b><small>${t.fj}</small></div></div>`:'';
  if(t.t==='prop'){const g=GR[t.g],r=t.rent;
   return `<div class="deed" style="--c:${g.c};--tc:${g.tc}"><div class="top">${t.n}<small>${t.sub} · المجموعة ${g.n}</small></div>${fame}`+
-   R('الإيجار',money(r[0]))+R('ومعاك المجموعة كلها',money(r[0]*2))+R('🏠 بيت واحد',money(r[1]))+R('🏠🏠 بيتين',money(r[2]))+R('🏠🏠🏠 3 بيوت',money(r[3]))+R('🏠🏠🏠🏠 4 بيوت',money(r[4]))+R('🏨 فندق',money(r[5]))+R('تكلفة البيت أو الفندق',money(t.hc))+R('قيمة الرهن',money(t.p/2))+'</div>';}
+   R('💰 سعر الشراء',money(t.p))+R('الإيجار (أرض فاضية)',money(r[0]))+R('ومعاك المجموعة كلها',money(r[0]*2))+R('🏠 بيت واحد',money(r[1]))+R('🏠🏠 بيتين',money(r[2]))+R('🏠🏠🏠 3 بيوت + 🚗 جراج',money(r[3]))+R('🏠🏠🏠🏠 4 بيوت',money(r[4]))+R('🏨 فندق',money(r[5]))+R('تكلفة كل بيت (أو الفندق)',money(t.hc))+R('إجمالي بناء فندق كامل',money(t.hc*5))+R('قيمة الرهن',money(t.p/2))+'</div>';}
  if(t.t==='st')return `<div class="deed" style="--c:#2a4a70"><div class="top">${t.ic} ${t.n}</div>${fame}`+R('لو معاه محطة واحدة',money(25))+R('محطتين',money(50))+R('3 محطات',money(100))+R('4 محطات',money(200))+R('قيمة الرهن',money(100))+'</div>';
  if(t.t==='ut')return `<div class="deed" style="--c:#2a4a70"><div class="top">${t.ic} ${t.n}</div>${fame}`+R('لو معاه واحدة','4 × النرد')+R('لو معاه الاتنين','10 × النرد')+R('قيمة الرهن',money(75))+'</div>';
  const d={go:'كل ما تعدي من هنا تقبض '+money(SALARY),tax:'ادفع '+money(t.p)+' للحكومة (والفلوس تروح لقهوة البلد).',chance:'اسحب كارت حظ.. يا تكسب يا تخسر! وهيتقرا بصوت عالي.',chest:'اسحب كارت من الجمعية.',jail:'لو جيت هنا بالنرد يبقى زيارة بس.',ahwa:'استريح، واكسب كل فلوس الضرايب والغرامات اللي اتجمعت (دلوقتي '+money(S.pool||0)+').',gojail:'تروح القسم على طول وتتعرض على القاضي بدون ما تقبض مرتب!'}[t.t]||'';
  return `<div class="deed" style="--c:#2a4a70"><div class="top">${t.ic} ${t.n}</div><div class="rw" style="display:block;padding:12px 14px;line-height:1.7">${d}</div></div>`;
+}
+async function showPrices(){
+ const rows=Object.keys(GR).map(k=>{const g=GR[k],ts=TILES.filter(t=>t.t==='prop'&&t.g===k);
+  return `<tr class="gh"><td colspan="4" style="background:${g.c};color:${g.tc}">${g.n} · البيت/الفندق بـ ${money(g.h)}</td></tr>`+ts.map(t=>`<tr><td>${t.fe||''} ${t.n}</td><td>${money(t.p)}</td><td>${money(t.rent[0])}</td><td>${money(t.rent[5])}</td></tr>`).join('');}).join('');
+ await ask(`<h2>💰 جدول الأسعار</h2><div class="pwrap"><table class="ptab"><tr><th>المكان</th><th>شراء</th><th>إيجار</th><th>فندق</th></tr>${rows}</table></div><p class="tip">المحطات 200 ج · الشركات 150 ج · المرتب ${money(SALARY)} · البداية ${money(START_CASH)}. ضغطة على أي مربع تفتح تفاصيله.</p>`,[{t:'تمام',v:1}]);
 }
 async function showTile(i){
  const t=TILES[i],o=ownerOf(i);let extra='';
@@ -1653,7 +1741,7 @@ async function doBuild(p,t){
  logm(`${hotel?'🏨':'🏠'} ${p.tok.e} ${p.name} ${hotel?'بنى فندق':'بنى بيت'} في ${t.n}`);
  if(hotel){fx('sfx','fan');fx('conf',50);}
  const gar=!hotel&&S.lv[t.i]===3;
- await cut(hotel?'hotel':gar?'garage':'house',{title:hotel?`فندق جديد في ${t.n}!`:gar?`جراج جديد في ${t.n}!`:`بيت جديد في ${t.n}`,lines:[{t:`${t.fe} ${t.n} (${t.fl})`},{t:rnd(hotel?J.hotel:gar?J.garage:J.build)}],m1:hotel?'#6a5a1d':gar?'#3a4a6a':'#2a5a4a'});
+ await cut(hotel?'hotel':gar?'garage':'house',{title:hotel?`فندق جديد في ${t.n}!`:gar?`جراج جديد في ${t.n}!`:`بيت جديد في ${t.n}`,lines:[{t:`${t.fe} ${t.n} (${t.fl})`},(()=>{const x=rnd(hotel?J.hotel:gar?J.garage:J.build);return findAudioFile(x)?{t:x,v:'host'}:{t:x};})()],m1:hotel?'#6a5a1d':gar?'#3a4a6a':'#2a5a4a'});
 }
 function doSell(p,t){p.cash+=t.hc/2;S.lv[t.i]=lvl(t.i)-1;fx('sfx','coin');logm(`${p.name} باع بيت في ${t.n} بـ ${money(t.hc/2)}`);refresh();}
 function doMort(p,t){S.mort[t.i]=1;p.cash+=t.p/2;fx('sfx','coin');logm(`${p.name} رهن ${t.n} بـ ${money(t.p/2)}`);refresh();}
