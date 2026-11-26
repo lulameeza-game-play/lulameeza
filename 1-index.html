@@ -1,0 +1,2098 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:dark}html,body{margin:0}body{font-size:14px}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>لولاميزا</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0e1a2b">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Lalezar&display=swap">
+<style>
+:root{
+  --bg:#0e1a2b; --panel:#16294a; --panel2:#1d3856; --ink:#f6efe0; --muted:#9fb0c6;
+  --gold:#f2b632; --red:#e0405a; --green:#2fbf8f; --line:#2a4466; --tile:#1a3050;
+  --f-display:'Lalezar','Cairo',system-ui,sans-serif;
+  --f-body:'Cairo','Segoe UI',Tahoma,sans-serif;
+  color-scheme:dark; direction:rtl;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background-color:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;min-height:100svh;
+  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background-image:radial-gradient(1100px 500px at 85% -10%,#1f4070 0,transparent 60%),radial-gradient(900px 500px at 0% 110%,#2f1d45 0,transparent 55%)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.btn{background:var(--gold);color:#2a1a00;font-weight:800;padding:10px 18px;border-radius:12px;box-shadow:0 3px 0 #a87a10;transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #a87a10}
+.btn.alt{background:#2a4a70;color:var(--ink);box-shadow:0 3px 0 #0e1d30}
+.btn.bad{background:var(--red);color:#fff;box-shadow:0 3px 0 #8d1d33}
+.btn.good{background:var(--green);color:#022a1e;box-shadow:0 3px 0 #17775a}
+.btn.sm{padding:6px 12px;font-size:13px;border-radius:10px}
+.btn[disabled]{opacity:.4;cursor:not-allowed;box-shadow:none}
+.app{display:grid;gap:14px;max-width:1280px;margin:0 auto}
+@media(min-width:1000px){.app{grid-template-columns:minmax(0,1fr) 380px;align-items:start}}
+.boardwrap{display:grid;place-items:center}
+.board{position:relative;width:min(100%,calc(100svh - 28px));aspect-ratio:1;container-type:inline-size;display:grid;
+  grid-template-columns:1.5fr repeat(9,1fr) 1.5fr;grid-template-rows:1.5fr repeat(9,1fr) 1.5fr;direction:ltr;
+  background:#0b1626;border:3px solid var(--gold);border-radius:10px;box-shadow:0 20px 60px #0009}
+.tile{position:relative;background:var(--tile);border:1px solid #0b1626;display:flex;flex-direction:column;overflow:hidden;direction:rtl;text-align:center;cursor:pointer;min-width:0;min-height:0}
+.tile .band{height:24%;background:var(--c);display:flex;justify-content:center;align-items:center;gap:.2cqw;font-size:1.7cqw;line-height:1}
+.tile .nm{flex:1;display:flex;align-items:center;justify-content:center;font-size:1.3cqw;font-weight:700;line-height:1.15;padding:0 2px}
+.tile .ic{font-size:2.3cqw;line-height:1;padding-top:.3cqw}
+.tile .pr{font-size:1.2cqw;color:var(--gold);font-weight:700;padding-bottom:.3cqw}
+.tile.corner{background:#22406a}
+.tile.corner .nm{font-size:1.5cqw}.tile.corner .ic{font-size:3.6cqw}
+.tile.owned{box-shadow:inset 0 0 0 .45cqw var(--oc)}
+.tile.mort{filter:grayscale(1) brightness(.7)}
+.tile.mort::after{content:"مرهون";position:absolute;inset:auto 0 30% 0;background:#000a;font-size:1.2cqw;color:#fff}
+.tile.hl{animation:hl .9s ease-in-out 2}
+@keyframes hl{50%{background:#5a4a10}}
+@container (max-width:640px){.tile .nm{display:none}.tile .pr{font-size:2.1cqw}.tile .ic{font-size:3.6cqw}.tile.corner .ic{font-size:5cqw}.tile .band{font-size:2.4cqw}.tile.mort::after{display:none}}
+.tok{position:absolute;width:4.6cqw;height:4.6cqw;font-size:3.2cqw;transform:translate(-50%,-50%);z-index:5;display:grid;place-items:center;border-radius:50%;
+  background:var(--pc);border:.3cqw solid #fff;box-shadow:0 .4cqw 1cqw #000a;transition:left .16s linear,top .16s linear;line-height:1}
+.tok.on{z-index:7;outline:.35cqw solid var(--gold)}
+.tok span{display:block}
+.fl{position:absolute;transform:translate(-50%,-50%);z-index:9;font-family:var(--f-display);font-size:3.2cqw;pointer-events:none;animation:floatUp 1.3s ease-out forwards;text-shadow:0 2px 6px #000;white-space:nowrap}
+.fl.p{color:#6dffb8}.fl.m{color:#ff7a8d}
+.center{grid-area:2/2/11/11;direction:rtl;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6cqw;padding:1cqw;
+  background:linear-gradient(#10243d 40%,#25406a);overflow:hidden}
+.center>*{position:relative;z-index:2}
+.pyr{position:absolute!important;bottom:0;background:linear-gradient(#f2c04a,#a87420);clip-path:polygon(50% 0,100% 100%,0 100%);opacity:.85;z-index:1!important}
+.sun{position:absolute!important;top:7%;left:12%;width:9cqw;height:9cqw;border-radius:50%;background:radial-gradient(#ffe9a0,#f2b632 60%,transparent 62%);z-index:1!important;animation:pulse 4s ease-in-out infinite}
+.logo{font-family:var(--f-display);font-size:clamp(20px,5.2cqw,60px);color:var(--gold);line-height:1;text-shadow:0 .4cqw 0 #6b4a05,0 0 3cqw #f2b63255;transform:rotate(-3deg)}
+.status{font-family:var(--f-display);font-size:clamp(14px,2.6cqw,30px);text-align:center;min-height:2.6em;display:grid;place-items:center;max-width:90%}
+.dice{display:flex;gap:2.4cqw}
+.die{width:7.4cqw;height:7.4cqw;background:#fff;border-radius:1.3cqw;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:.7cqw;box-shadow:0 .6cqw 0 #b9b2a0,0 1cqw 2cqw #0008}
+.pip{border-radius:50%;margin:14%}.pip.on{background:#1b1b1b}
+.die.roll{animation:tumble .45s linear infinite}
+.center .btn{font-size:clamp(14px,2.3cqw,26px);padding:.9em 2em}
+.acts{display:flex;gap:1.2cqw;flex-wrap:wrap;justify-content:center}
+.panel{display:grid;gap:12px;min-width:0}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+.h{font-family:var(--f-display);font-size:21px;margin:0 0 8px;color:var(--gold);font-weight:400}
+.pl{display:grid;gap:8px}
+.pc{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--panel2);border:2px solid transparent}
+.pc.me{border-color:var(--pcol);box-shadow:0 0 18px -4px var(--pcol)}
+.pc.out{opacity:.4;filter:grayscale(1)}
+.pc .tk{font-size:26px;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:var(--pcol)}
+.pc b{display:block;line-height:1.2}.pc small{color:var(--muted)}
+.cash{font-weight:800;font-variant-numeric:tabular-nums;color:var(--gold);font-size:17px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.log{max-height:190px;overflow:auto;display:grid;gap:4px;font-size:13.5px}
+.log div{padding:5px 9px;border-radius:8px;background:#102038}
+.log div:first-child{background:#27456b}
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:#050a14d9;padding:max(14px,env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) max(14px,env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));animation:fade .2s}
+.sheet{width:min(540px,100%);max-height:92svh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;animation:popIn .35s cubic-bezier(.3,1.5,.5,1) both;display:grid;gap:12px}
+.sheet h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:26px;color:var(--gold)}
+.sheet p{margin:0;line-height:1.7}
+.deed{background:#f6efe0;color:#1e1e1e;border-radius:10px;overflow:hidden;border:2px solid #111}
+.deed .top{padding:10px;text-align:center;background:var(--c);color:var(--tc,#fff);font-family:var(--f-display);font-size:24px;line-height:1.1}
+.deed .top small{display:block;font-family:var(--f-body);font-size:12px;opacity:.85}
+.deed .rw{display:flex;justify-content:space-between;padding:3px 14px;font-size:14px;font-variant-numeric:tabular-nums}
+.deed .rw:nth-child(even){background:#0001}
+.flip{perspective:900px;display:grid;place-items:center}
+.card{width:min(300px,86%);min-height:190px;border-radius:16px;padding:18px;display:grid;place-items:center;text-align:center;font-size:18px;line-height:1.7;font-weight:700;animation:flipIn .7s cubic-bezier(.3,1.2,.5,1) both;border:4px solid #fff3;box-shadow:0 14px 40px #0008}
+.card .ct{font-family:var(--f-display);font-size:28px;display:block;margin-bottom:6px;font-weight:400}
+.card.ch{background:linear-gradient(135deg,#ffb347,#e0405a);color:#2a0710}
+.card.cc{background:linear-gradient(135deg,#6ee7b7,#2f8fbf);color:#04202a}
+.grp{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.grp .gh{padding:6px 10px;background:var(--c);color:var(--tc,#fff);font-weight:800;font-size:13px}
+.prow{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:8px 10px;background:var(--panel2);border-top:1px solid #0003;flex-wrap:wrap}
+.prow .n{font-weight:700}.prow .lv{font-size:15px;letter-spacing:1px}
+.cut{position:fixed;inset:0;z-index:80;display:grid;place-items:center;align-content:center;gap:10px;cursor:pointer;animation:fade .25s;text-align:center;padding:16px;
+  background:radial-gradient(circle at 50% 40%,var(--m1,#2a4a80),var(--m2,#0b1426) 75%)}
+.cut .stage{position:relative;width:min(560px,94vw);height:min(44svh,300px);overflow:hidden}
+.cut h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(30px,8vw,56px);color:var(--gold);text-shadow:0 4px 0 #0007;line-height:1.1;animation:popIn .5s .15s cubic-bezier(.3,1.6,.5,1) both}
+.cut p{margin:0;font-size:clamp(15px,3.6vw,20px);max-width:520px;line-height:1.7;animation:fade .6s .4s both}
+.cut small{color:var(--muted);animation:blink 1.4s 1.2s infinite both}
+.actor{position:absolute;line-height:1;transform-origin:50% 100%}
+.a-drive{animation:driveIn .9s cubic-bezier(.2,.8,.2,1) both}
+.a-pop{animation:popIn .55s cubic-bezier(.3,1.6,.5,1) both}
+.a-bounce{animation:bounce .6s ease-in-out infinite}
+.a-shake{animation:shake .35s linear infinite}
+.a-blink{animation:blink .35s steps(2) infinite}
+.a-rain{animation:rain 1.7s linear infinite}
+.a-rise{animation:rise .9s cubic-bezier(.2,1.3,.4,1) both}
+.a-spin{animation:spin 1.2s linear infinite}
+.a-float{animation:floatUp 1.7s ease-out infinite}
+.a-fly{animation:fly 1.2s ease-in-out infinite}
+.a-stamp{animation:stamp .5s .35s cubic-bezier(.3,1.8,.5,1) both}
+.a-sway{animation:sway 1.2s ease-in-out infinite}
+.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:90;animation:cfall linear infinite;pointer-events:none}
+.setup{max-width:560px;margin:2vh auto;display:grid;gap:14px}
+.setup .hero{text-align:center;display:grid;gap:6px;padding-block:8px}
+.setup h1{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(46px,14vw,84px);color:var(--gold);line-height:1;text-shadow:0 5px 0 #6b4a05,0 0 40px #f2b63266;transform:rotate(-2deg)}
+.setup .tag{color:var(--muted);font-size:16px}
+.prs{display:grid;gap:8px}
+.pr-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;background:var(--panel2);padding:8px;border-radius:12px}
+.pr-row input[type=text]{background:#0e1d33;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 10px;font:inherit;min-width:0;width:100%}
+.pr-row .tkb{font-size:26px;width:46px;height:46px;border-radius:50%;background:var(--pcol)}
+.seg{display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.seg button{padding:7px 10px;background:#0e1d33;font-size:13px;font-weight:700}
+.seg button.on{background:var(--gold);color:#2a1a00}
+.tip{font-size:13px;color:var(--muted);line-height:1.7}
+@keyframes fade{from{opacity:0}}
+@keyframes popIn{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+@keyframes flipIn{from{opacity:0;transform:rotateY(90deg) scale(.7)}to{opacity:1;transform:none}}
+@keyframes tumble{0%{transform:rotate(0) translateY(0)}25%{transform:rotate(100deg) translateY(-1.4cqw)}50%{transform:rotate(200deg) translateY(0)}75%{transform:rotate(290deg) translateY(-1cqw)}100%{transform:rotate(360deg) translateY(0)}}
+@keyframes pulse{50%{transform:scale(1.12)}}
+@keyframes floatUp{from{opacity:1;transform:translate(-50%,-50%)}to{opacity:0;transform:translate(-50%,-260%)}}
+@keyframes driveIn{from{transform:translateX(120vw)}}
+@keyframes bounce{50%{transform:translateY(-16px)}}
+@keyframes shake{25%{transform:translateX(-6px) rotate(-4deg)}75%{transform:translateX(6px) rotate(4deg)}}
+@keyframes blink{50%{opacity:.15}}
+@keyframes rain{from{transform:translateY(-70px) rotate(0)}to{transform:translateY(360px) rotate(360deg)}}
+@keyframes rise{from{transform:translateY(140px) scaleY(.1);opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fly{0%,100%{transform:translateX(var(--x0,-90px))}50%{transform:translateX(var(--x1,90px)) translateY(-26px)}}
+@keyframes stamp{from{opacity:0;transform:scale(4) rotate(-25deg)}to{opacity:1;transform:scale(1) rotate(-10deg)}}
+@keyframes sway{50%{transform:rotate(8deg)}0%,100%{transform:rotate(-8deg)}}
+@keyframes cfall{to{transform:translateY(110vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+body{background-attachment:fixed}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(2px 2px at 20% 30%,#fff8,transparent),radial-gradient(2px 2px at 70% 15%,#fff7,transparent),radial-gradient(1.5px 1.5px at 40% 70%,#fff6,transparent),radial-gradient(1.5px 1.5px at 85% 60%,#fff6,transparent);animation:twinkle 4s ease-in-out infinite alternate}
+@keyframes twinkle{to{opacity:.35}}
+.app,.setup{position:relative;z-index:1}
+.btn.big{font-size:19px;padding:14px 18px;border-radius:14px;width:100%}
+.tile{background:linear-gradient(160deg,#21406a,#162b4a);transition:filter .2s}
+.tile:hover{filter:brightness(1.25)}
+.tile .fe{position:absolute;inset:26% 0 24% 0;display:grid;place-items:center;font-size:3.4cqw;opacity:.32;pointer-events:none;filter:saturate(1.2)}
+.tile.k-st .fe,.tile.k-ut .fe{inset:18% 0 30% 0;font-size:3.6cqw;opacity:.28}
+.tile .nm,.tile .pr,.tile .ic{position:relative;z-index:1}
+.tile .band{gap:.15cqw;box-shadow:inset 0 -.25cqw 0 #0004;min-height:24%}
+.hs{display:inline-block;width:1.5cqw;height:1.5cqw;background:linear-gradient(#5ed17a,#1f9a47);clip-path:polygon(50% 0,100% 42%,100% 100%,0 100%,0 42%);filter:drop-shadow(0 .15cqw 0 #0006)}
+.ht{display:inline-block;width:3.3cqw;height:1.7cqw;background:linear-gradient(#ff6b7e,#c1213a);border-radius:.3cqw;box-shadow:0 .2cqw 0 #6d0f1f;position:relative}
+.ht::after{content:"";position:absolute;inset:25% 12%;background:repeating-linear-gradient(90deg,#ffe38a 0 .35cqw,transparent .35cqw .8cqw)}
+.hs.new,.ht.new{animation:popIn .6s cubic-bezier(.3,1.7,.5,1) both}
+@container (max-width:640px){.hs{width:2.1cqw;height:2.1cqw}.ht{width:4.4cqw;height:2.3cqw}.tile .fe{font-size:4.2cqw}}
+.tile.owned{box-shadow:inset 0 0 0 .45cqw var(--oc),0 0 1.4cqw -.2cqw var(--oc)}
+.tile.corner{background:linear-gradient(160deg,#315a93,#1d3a63)}
+.tile.hl{animation:hl .9s ease-in-out 2}
+.tok span{display:inline-block}
+.tok.on{box-shadow:0 0 0 .45cqw var(--gold),0 0 2.4cqw var(--gold)}
+.pt{position:absolute;z-index:9;pointer-events:none;font-size:2cqw;transform:translate(-50%,-50%);animation:burst 1s ease-out forwards}
+@keyframes burst{to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy)));opacity:0}}
+.rx{position:absolute;bottom:2%;z-index:9;display:grid;place-items:center;pointer-events:none;animation:rxUp 2.2s ease-out forwards}
+.rx span{font-size:7cqw;filter:drop-shadow(0 .5cqw .8cqw #0009)}
+.rx small{font-size:1.5cqw;background:#000a;color:#fff;border-radius:99px;padding:0 1cqw}
+@keyframes rxUp{from{transform:translateY(0) scale(.4);opacity:0}15%{opacity:1;transform:translateY(-4cqw) scale(1.1)}to{transform:translateY(-34cqw) scale(1);opacity:0}}
+.rxrow{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.rxb{font-size:22px;background:var(--panel2);border-radius:10px;padding:4px 10px;transition:transform .1s}
+.rxb:active{transform:scale(1.3)}
+.nile{position:absolute!important;left:0;right:0;bottom:0;height:20%;background:repeating-linear-gradient(100deg,#2a6fb0 0 2.4cqw,#3a86c8 2.4cqw 4.8cqw);opacity:.75;z-index:1!important;animation:wave 3s linear infinite}
+@keyframes wave{to{background-position:9.6cqw 0}}
+.boat{position:absolute!important;bottom:11%;font-size:5cqw;z-index:2!important;animation:sail 14s linear infinite}
+@keyframes sail{from{left:-8%}to{left:104%}}
+.center .status{background:#0007;border-radius:1.4cqw;padding:.4cqw 1.6cqw}
+.die{background:linear-gradient(145deg,#fff,#e4dcc8)}
+.die.roll{animation:tumble .4s linear infinite}
+.fame{display:flex;gap:12px;align-items:center;padding:8px 14px;background:#fff6d6;border-bottom:1px solid #0002}
+.fame>span{font-size:34px}
+.fame small{display:block;color:#5a4a1c;line-height:1.5;margin-top:2px}
+.cut .bar{width:min(480px,86vw);height:6px;border-radius:9px;background:#fff2;overflow:hidden}
+.cut .bar i{display:block;height:100%;width:0;background:var(--gold)}
+.cut p{min-height:3.4em;animation:fade .5s both}
+.a-gavel{animation:gavel .8s ease-in-out infinite;transform-origin:90% 90%}
+@keyframes gavel{0%,100%{transform:rotate(-40deg)}45%{transform:rotate(15deg)}}
+.cut .stage{background:linear-gradient(#0000,#0003);border-radius:16px}
+.toast{position:fixed;left:50%;bottom:max(70px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:12px;z-index:120;max-width:90vw;text-align:center;animation:popIn .3s both}
+#musWrap{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:60;display:grid;gap:8px;justify-items:start;direction:rtl}
+#musBtn{width:48px;height:48px;border-radius:50%;background:var(--gold);color:#2a1a00;font-size:22px;box-shadow:0 4px 14px #0008}
+#musPanel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:10px;width:min(300px,calc(100vw - 32px));box-shadow:0 10px 30px #000a}
+#musPanel[hidden]{display:none}
+.vol{display:flex;gap:8px;align-items:center}.vol input{flex:1;accent-color:var(--gold)}
+#musPanel .seg{flex-wrap:wrap}#musPanel .seg button{flex:1 1 auto}
+.menuhero{position:relative;height:clamp(250px,42svh,340px);border-radius:20px;overflow:hidden;border:2px solid var(--gold);background:linear-gradient(#16316a 0%,#7a4a9a 45%,#f08a48 82%,#f2b632);box-shadow:0 16px 50px #0009;container-type:inline-size}
+.menuhero h1{position:absolute;top:12%;left:0;right:0;margin:0;text-align:center;font-family:var(--f-display);font-weight:400;font-size:clamp(54px,18cqw,100px);line-height:1;color:var(--gold);text-shadow:0 5px 0 #6b4a05,0 0 40px #f2b63288;transform:rotate(-2deg);animation:logoIn .9s cubic-bezier(.3,1.5,.5,1) both;z-index:5}
+@keyframes logoIn{from{opacity:0;transform:scale(.3) rotate(-14deg)}}
+.m-sub{position:absolute;top:calc(12% + clamp(60px,20cqw,106px));left:0;right:0;text-align:center;color:#fff;font-weight:700;z-index:5;text-shadow:0 2px 6px #0008;padding:0 12px;animation:fade 1s .5s both}
+.m-sun{position:absolute;right:12%;bottom:30%;width:22cqw;height:22cqw;border-radius:50%;background:radial-gradient(#fff3b0,#ffcf4a 55%,#ff9c3a);box-shadow:0 0 60px #ffcf4a;animation:pulse 5s ease-in-out infinite}
+.m-pyr{position:absolute;bottom:14%;background:linear-gradient(105deg,#f6cf72 50%,#c28a30 50%);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.m-nile{position:absolute;left:0;right:0;bottom:0;height:20%;background:repeating-linear-gradient(100deg,#1d5b9a 0 24px,#2c78bb 24px 48px);animation:wave2 4s linear infinite}
+@keyframes wave2{to{background-position:96px 0}}
+.m-boat{position:absolute;bottom:12%;font-size:34px;animation:sail 16s linear infinite;z-index:3}
+.m-camel{position:absolute;bottom:17%;font-size:44px;animation:walk 22s linear infinite;z-index:3;transform:scaleX(-1)}
+@keyframes walk{from{left:104%}to{left:-14%}}
+.m-palm{position:absolute;bottom:14%;font-size:56px;z-index:3;transform-origin:50% 100%;animation:sway 3.5s ease-in-out infinite}
+.m-coin{position:absolute;bottom:20%;font-size:24px;animation:coinUp 4s ease-in infinite;z-index:4;opacity:0}
+@keyframes coinUp{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-190px) rotate(300deg);opacity:0}}
+.menubtns{display:grid;gap:10px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row2 .btn{width:100%}
+.inp{width:100%;background:#0e1d33;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:12px;font:inherit;font-size:17px}
+.code-in{text-align:center;letter-spacing:.4em;text-transform:uppercase;font-size:24px;direction:ltr}
+.code{font-family:var(--f-display);font-size:56px;letter-spacing:.3em;text-align:center;color:var(--gold);direction:ltr;padding-inline-start:.3em}
+.setup .tag{text-align:center}
+@media (prefers-reduced-motion:reduce){.tok,.m-camel,.m-boat,.m-palm,.m-coin,.boat{animation:none!important}}
+.linkbox{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.linkbox .inp{font-size:13px;padding:9px}
+</style>
+<div id="app" dir="rtl" lang="ar"></div>
+<div id="layer" dir="rtl" lang="ar"></div>
+<script>
+/* ====== اتصال مستقل عبر WebRTC (PeerJS) مع اكتشاف تلقائي للغرفة وتوريث المضيف ====== */
+(function(){
+ window.STANDALONE=true;
+ const CFGS=[
+  {
+   host:'0.peerjs.com',
+   secure:true,
+   port:443,
+   config:{iceServers:[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun1.l.google.com:19302'},
+    {urls:'stun:global.stun.twilio.com:3478'},
+    {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}
+   ]}
+  },
+  {
+   secure:true,
+   config:{iceServers:[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun2.l.google.com:19302'}
+   ]}
+  }
+ ];
+ const err=(code,message)=>({code,message:message||code});
+ function load(){
+  if(window.Peer)return Promise.resolve();
+  return new Promise((res,rej)=>{
+   const s=document.createElement('script');
+   s.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';
+   s.onload=res;
+   s.onerror=()=>rej(err('upstream_error','peerjs'));
+   document.head.appendChild(s);
+  });
+ }
+
+ async function join(roomCode){
+  await load();
+  const cleanCode=String(roomCode).replace(/^bk-/i,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const L={},hs=new Set(),cs=new Set();
+  const peers=new Map();
+  const conns=new Map();
+  const seenMsg=new Set();
+  let myId=null,dead=false,peer=null,myPres={};
+  let isActingHost=false;
+
+  const list=()=>[...peers.entries()]
+   .sort((a,b)=>(a[1].joinedAt||0)-(b[1].joinedAt||0)||a[0].localeCompare(b[0]))
+   .map(([id,p])=>({
+    peer:id,
+    presence:Object.assign({name:id===myId?(myPres.name||'لاعب'):'لاعب متصل'},p.presence||{}),
+    isMe:id===myId,
+    sameTab:id===myId,
+    kind:'viewer',
+    by:null,
+    guest:false,
+    updatedAt:p.joinedAt||0
+   }));
+
+  const emitPeers=(joined=[],left=[])=>{
+   const l=list();
+   hs.forEach(h=>{try{h({peers:l,joined,left,updated:[]});}catch(e){}});
+  };
+
+  const emitConn=()=>{
+   const ok=!dead&&!!myId;
+   cs.forEach(h=>{try{h(ok);}catch(e){}});
+  };
+
+  const deliver=(topic,data,from)=>{
+   (L[topic]||[]).slice().forEach(f=>{
+    try{f({peer:from,topic,data,isMe:from===myId,sameTab:from===myId,kind:'viewer',by:null,guest:false});}catch(e){}
+   });
+  };
+
+  const broadcast=(msg,exceptId=null)=>{
+   conns.forEach((c,id)=>{
+    if(id!==exceptId&&c&&c.open){try{c.send(msg);}catch(e){}}
+   });
+  };
+
+  const syncPeerTable=()=>{
+   const payload=[...peers.entries()].map(([id,v])=>({id,presence:v.presence||{},joinedAt:v.joinedAt||0}));
+   broadcast({t:'ptbl',list:payload});
+  };
+
+  const connectTo=(targetId)=>{
+   if(!peer||dead||!targetId||targetId===myId)return;
+   const existing=conns.get(targetId);
+   if(existing){
+    if(existing.open)return;
+    const st=existing.peerConnection&&existing.peerConnection.connectionState;
+    if(st==='connecting'||st==='connected')return;
+   }
+   try{
+    const c=peer.connect(targetId,{serialization:'json',reliable:true});
+    if(c)attachConn(c,targetId);
+   }catch(e){}
+  };
+
+  function electHost(){
+   if(dead||!myId)return;
+   const sorted=[...peers.entries()].sort((a,b)=>(a[1].joinedAt||0)-(b[1].joinedAt||0)||a[0].localeCompare(b[0]));
+   const wasHost=isActingHost;
+   isActingHost=!!(sorted[0]&&sorted[0][0]===myId);
+   if(isActingHost&&!wasHost){
+    myPres=Object.assign({},myPres,{host:true});
+    peers.set(myId,{presence:myPres,joinedAt:peers.get(myId)?.joinedAt||Date.now()});
+    broadcast({t:'pres',p:myPres});
+    syncPeerTable();
+    deliver('__host_promoted__',{hostPeer:myId},myId);
+   }else if(!isActingHost&&wasHost){
+    deliver('__host_demoted__',{hostPeer:sorted[0]&&sorted[0][0]},myId);
+   }
+  }
+
+  const attachConn=(c,remoteId)=>{
+   if(!remoteId||remoteId===myId)return;
+   const prevConn=conns.get(remoteId);
+   if(prevConn&&prevConn!==c&&prevConn.open)return;
+   conns.set(remoteId,c);
+   if(!peers.has(remoteId))peers.set(remoteId,{presence:{},joinedAt:Date.now()});
+
+   c.on('open',()=>{
+    try{c.send({t:'hello',id:myId,p:myPres,joinedAt:peers.get(myId)?.joinedAt||Date.now(),isHost:isActingHost});}catch(e){}
+    if(myPres&&myPres.name){
+     try{c.send({t:'pres',p:myPres});}catch(e){}
+    }
+    if(isActingHost)syncPeerTable();
+    electHost();
+    const joinedItem=list().find(x=>x.peer===remoteId);
+    emitPeers(joinedItem?[joinedItem]:[],[]);
+   });
+
+   c.on('data',m=>{
+    if(!m||dead)return;
+    const senderId=m.id||m.from||remoteId;
+    if(m.t==='hello'){
+     const prev=peers.get(remoteId)||{joinedAt:Date.now()};
+     const joinTime=Math.min(prev.joinedAt||Date.now(),m.joinedAt||Date.now());
+     peers.set(remoteId,{presence:Object.assign({},prev.presence,m.p||{}),joinedAt:joinTime});
+     if(myPres&&myPres.name){
+      try{c.send({t:'pres',p:myPres});}catch(e){}
+     }
+     if(isActingHost)syncPeerTable();
+     electHost();
+     emitPeers([],[]);
+    }else if(m.t==='ptbl'&&Array.isArray(m.list)){
+     const oldIds=new Set(peers.keys());
+     m.list.forEach(item=>{
+      if(!item||!item.id)return;
+      const curP=peers.get(item.id);
+      const joinTime=curP?Math.min(curP.joinedAt||Date.now(),item.joinedAt||Date.now()):(item.joinedAt||Date.now());
+      peers.set(item.id,{
+       presence:item.id===myId?myPres:Object.assign({},curP?.presence||{},item.presence||{}),
+       joinedAt:joinTime
+      });
+      if(item.id!==myId&&!conns.has(item.id)){
+       connectTo(item.id);
+      }
+     });
+     const joined=[...peers.keys()].filter(k=>!oldIds.has(k)).map(id=>list().find(x=>x.peer===id)).filter(Boolean);
+     electHost();
+     emitPeers(joined,[]);
+    }else if(m.t==='pres'){
+     const prev=peers.get(remoteId)||{joinedAt:Date.now()};
+     peers.set(remoteId,{presence:Object.assign({},prev.presence,m.p||{}),joinedAt:prev.joinedAt});
+     if(isActingHost)syncPeerTable();
+     emitPeers([],[]);
+    }else if(m.t==='relay'){
+     if(m.mid){
+      if(seenMsg.has(m.mid))return;
+      seenMsg.add(m.mid);
+      if(seenMsg.size>2000){const first=seenMsg.values().next().value;seenMsg.delete(first);}
+     }
+     deliver(m.topic,m.data,m.from||senderId);
+     broadcast(m,remoteId);
+    }
+   });
+
+   const cleanup=()=>{
+    if(dead)return;
+    if(conns.get(remoteId)!==c)return;
+    conns.delete(remoteId);
+    // Keep peer briefly if still in peer table via another connection; otherwise remove
+    const leftItem=list().find(x=>x.peer===remoteId);
+    if(peers.delete(remoteId)){
+     if(isActingHost)syncPeerTable();
+     electHost();
+     emitPeers([],leftItem?[leftItem]:[]);
+    }
+   };
+   c.on('close',cleanup);
+   c.on('error',cleanup);
+  };
+
+  const slotCandidates=['0','1','2','3','4','5'].map(s=>`lmr-${cleanCode}-${s}`);
+
+  async function openPeerWithSlot(idx,cfgIdx=0){
+   if(cfgIdx>=CFGS.length)throw err('upstream_error','no_broker');
+   const cfg=CFGS[cfgIdx];
+   return new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>{
+     try{p.destroy();}catch(_){}
+     if(cfgIdx+1<CFGS.length)openPeerWithSlot(0,cfgIdx+1).then(resolve,reject);
+     else reject(err('upstream_error','timeout'));
+    },8000);
+    const idToTry=idx<slotCandidates.length?slotCandidates[idx]:`lmr-${cleanCode}-${Math.random().toString(36).slice(2,7)}`;
+    const p=new Peer(idToTry,cfg);
+    let settled=false;
+    p.on('error',e=>{
+     if(settled)return;
+     if(e&&e.type==='unavailable-id'&&idx<slotCandidates.length){
+      settled=true;
+      clearTimeout(timer);
+      try{p.destroy();}catch(_){}
+      openPeerWithSlot(idx+1,cfgIdx).then(resolve,reject);
+     }else if(e&&e.type==='unavailable-id'){
+      settled=true;
+      clearTimeout(timer);
+      try{p.destroy();}catch(_){}
+      openPeerWithSlot(slotCandidates.length+1,cfgIdx).then(resolve,reject);
+     }else if(cfgIdx+1<CFGS.length){
+      settled=true;
+      clearTimeout(timer);
+      try{p.destroy();}catch(_){}
+      openPeerWithSlot(0,cfgIdx+1).then(resolve,reject);
+     }else{
+      settled=true;
+      clearTimeout(timer);
+      try{p.destroy();}catch(_){}
+      reject(err('upstream_error',e&&e.type||'peer_err'));
+     }
+    });
+    p.on('open',id=>{
+     if(settled)return;
+     settled=true;
+     clearTimeout(timer);
+     resolve(p);
+    });
+   });
+  }
+
+  peer=await openPeerWithSlot(0,0);
+  myId=peer.id;
+  const myJoinedAt=Date.now();
+  peers.set(myId,{presence:myPres,joinedAt:myJoinedAt});
+  isActingHost=(myId===slotCandidates[0]);
+  peer.on('connection',c=>attachConn(c,c.peer));
+
+  const hashPeer=decodeURIComponent((location.hash||'').replace(/^#host-/,''));
+  const discoverTargets=()=>new Set([...slotCandidates,hashPeer,...peers.keys()].filter(x=>x&&x!==myId));
+
+  discoverTargets().forEach(t=>connectTo(t));
+
+  const probeTimer=setInterval(()=>{
+   if(dead)return clearInterval(probeTimer);
+   discoverTargets().forEach(t=>{
+    const c=conns.get(t);
+    if(!c||(!c.open&&c.peerConnection&&c.peerConnection.connectionState==='failed')){
+     if(c){try{c.close();}catch(_){}conns.delete(t);}
+     connectTo(t);
+    }
+   });
+   if(myPres&&myPres.name){
+    broadcast({t:'pres',p:myPres});
+   }
+  },1800);
+
+  emitConn();
+
+  return {
+   name:cleanCode,
+   get isHost(){return isActingHost;},
+   get peerId(){return myId;},
+   emit:async(topic,data)=>{
+    if(dead)return;
+    const d=JSON.parse(JSON.stringify(data===undefined?null:data));
+    const mid=myId+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);
+    seenMsg.add(mid);
+    deliver(topic,d,myId);
+    broadcast({t:'relay',mid,topic,data:d,from:myId});
+   },
+   on:(t,f)=>{
+    (L[t]=L[t]||[]).push(f);
+    return()=>{L[t]=(L[t]||[]).filter(x=>x!==f);};
+   },
+   presence:async p=>{
+    myPres=Object.assign({},myPres,p);
+    peers.set(myId,{presence:myPres,joinedAt:peers.get(myId)?.joinedAt||myJoinedAt});
+    broadcast({t:'pres',p:myPres});
+    if(isActingHost)syncPeerTable();
+    emitPeers([],[]);
+   },
+   peers:()=>list(),
+   onPeers:h=>{
+    hs.add(h);
+    setTimeout(()=>{const l=list();h({peers:l,joined:l,left:[],updated:[]});});
+    return()=>hs.delete(h);
+   },
+   connected:()=>!dead&&!!myId,
+   onConnection:h=>{
+    cs.add(h);
+    setTimeout(()=>h(!dead&&!!myId));
+    return()=>cs.delete(h);
+   },
+   leave:async()=>{
+    dead=true;
+    clearInterval(probeTimer);
+    conns.forEach(c=>{try{c.close();}catch(e){}});
+    conns.clear();
+    try{peer.destroy();}catch(e){}
+    emitConn();
+   }
+  };
+ }
+
+ window.claude={use:async n=>n==='room'?{join}:null};
+})();
+</script>
+<script>
+'use strict';
+const $=(s,r=document)=>r.querySelector(s);
+const money=n=>Number(n).toLocaleString('ar-EG')+' ج';
+const num=n=>Number(n).toLocaleString('ar-EG');
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+const GR={
+ brn:{c:'#8a5a3c',tc:'#fff',h:50,n:'البني'},   lb:{c:'#7fd0f0',tc:'#06324a',h:50,n:'السماوي'},
+ pk:{c:'#ef7fb5',tc:'#4a0b2a',h:100,n:'الوردي'}, or:{c:'#f39a2e',tc:'#3d2100',h:100,n:'البرتقالي'},
+ rd:{c:'#e0405a',tc:'#fff',h:150,n:'الأحمر'},    yl:{c:'#f3d34a',tc:'#3a3000',h:150,n:'الأصفر'},
+ gr:{c:'#2fbf6f',tc:'#032a14',h:200,n:'الأخضر'}, db:{c:'#3a5bd9',tc:'#fff',h:200,n:'الأزرق الغامق'}
+};
+const P=(n,p,g,sub,fe,fl,fj)=>({t:'prop',n,p,g,sub,fe,fl,fj});
+const TILES=[
+ {t:'go',n:'البداية',ic:'💰',sub:'اقبض المرتب'},
+ P('بولاق الدكرور',60,'brn','عاصمة الزحمة','عاصمة الزحمة','الزحمة','اشتريت الشارع كله.. بس التوكتوك اللي قدامك قرر يعمل فرح في النص ومش هيتحرك قبل بكرة.'),
+ {t:'chest',n:'جمعية',ic:'👵'},
+ P('إمبابة',60,'brn','كوبري إمبابة','كوبري إمبابة','الكوبري','الكوبري بقى بتاعك.. والعربيات اللي واقفة عليه من أيام الفراعنة لسه بتسأل: "هو الكوبري مقفول؟"'),
+ {t:'tax',n:'فاتورة المحمول',p:200,ic:'📱'},
+ {t:'st',n:'محطة رمسيس',p:200,ic:'🚂',fe:'🚂',fl:'القطر',fj:'القطر اتأخر.. بس الراكب اللي عليه كان مرتاح، لأنه واقف من الصبح.'},
+ P('شبرا',100,'lb','أرض الكشري','أرض الكشري','الكشري','الكشري بقى ببلاش لحد ما تقول "زود دقة وشطة"، وهنا بتبدأ فاتورة العلاج في المستشفى.'),
+ {t:'chance',n:'حظ',ic:'🎲'},
+ P('المطرية',100,'lb','شجرة مريم','شجرة مريم','شجرة مريم','الشجرة بصتلك وقالت: "أنا صامدة من آلاف السنين، إنت إيه اللي جابك تقف في الشمس؟"'),
+ P('عين شمس',120,'lb','عاصمة الطلبة','عاصمة الطلبة','الجامعة','نص الطلبة بقوا مستأجرين عندك، والباقي بيقولولك: "ادفعلك آخر السنة بعد النتيجة".'),
+ {t:'jail',n:'القسم (زيارة)',ic:'🚔',sub:'زيارة بس'},
+ P('دمياط',140,'pk','ملكة الأثاث','ملكة الأثاث','الأثاث','اشتريت أحسن عفش في البلد.. بس النجار قالك: "الكنبة هتوصل بعد ما ابنك يتخرج".'),
+ {t:'ut',n:'شركة الكهربا',p:150,ic:'⚡',fe:'⚡',fl:'النور',fj:'شركة الكهربا بقت بتاعتك.. لما تقطع النور هتقطعه على نفسك الأول.'},
+ P('المنصورة',140,'pk','بلد المزز والجلاش','بلد المزز والجلاش','المزز والجلاش','البلد بقت بتاعتك.. وكل الناس جاية تباركلك وعايزة حتة جلاش قبل ما تمشي.'),
+ P('طنطا',160,'pk','مولد السيد البدوي','مولد السيد البدوي','المولد','المولد قام والمداح غنى، وإنت اللي هتدفع حساب الحمص والحلاوة لكل اللي هيّصوا.'),
+ {t:'st',n:'مترو الأنفاق',p:200,ic:'🚇',fe:'🚇',fl:'المترو',fj:'المترو بقى بتاعك.. والركاب بيقولوا "ارجع خطوة" لمليون مرة في اليوم.'},
+ P('الزقازيق',180,'or','عاصمة الشرقية','عاصمة الشرقية','الخيل العربي','عندك خيل عربي أصيل.. بس الحصان عايز يركبك إنت مش العكس.'),
+ {t:'chest',n:'جمعية',ic:'👵'},
+ P('بنها',180,'or','عسل بنها','عسل بنها','العسل','العسل بقى بتاعك.. بس أول ما تيجي تذوقه تلاقي النحل عامل مظاهرة ضد الإيجار الجديد.'),
+ P('بورسعيد',200,'or','المنطقة الحرة','المنطقة الحرة','المنطقة الحرة','البضاعة مكتوب عليها "مستورد فاخر".. وهي متقفلة في ورشة تحت بير السلم من الصبح.'),
+ {t:'ahwa',n:'قهوة البلد',ic:'☕',sub:'استراحة'},
+ {t:'chance',n:'حظ',ic:'🎲'},
+ P('أسيوط',220,'rd','عاصمة الصعيد','عاصمة الصعيد','كرم الصعايدة','اتعزمت على غدا "خفيف".. لقيت صينية تكفي حي كامل وبتسمع جملة: "إنت لسه مأكلتش حاجة!"'),
+ {t:'chance',n:'حظ',ic:'🎲'},
+ P('سوهاج',220,'rd','أخميم وحرير','أخميم وحرير','حرير أخميم','حرير أخميم بقى بتاعك.. وكل قرايبك فجأة بقوا عايزين شال هدية عشان "المناسبة".'),
+ P('المنيا',240,'rd','عروس الصعيد','عروس الصعيد','عروس الصعيد','البلد بقت بتاعتك.. والناس كلها بتسألك: "الفرح إمتى والعشا إمتى؟"'),
+ {t:'st',n:'موقف الميكروباص',p:200,ic:'🚐',fe:'🚐',fl:'الميكروباص',fj:'السواق قالك "الأجرة هتعدي" وعدّت.. من غير ما تدفع.'},
+ P('الفيوم',260,'yl','السواقي والبط','🦆','السواقي','السواقي بتلف على فلوسك.. والبط بيقول كواك على كل جنيه.'),
+ P('بني سويف',260,'yl','مصانع الأسمنت','مصانع الأسمنت','الأسمنت','اشتريت الأسمنت.. وجارك أول واحد خبط عليك وقالك: "سلفني شوية عشان هرمم البلكونة".'),
+ {t:'ut',n:'شركة الميه',p:150,ic:'🚰',fe:'🚰',fl:'الميه','fj':'المية جاية.. بس هتجيلك الساعة 4 الفجر، وانت نايم.'},
+ P('الإسماعيلية',280,'yl','مدينة الجمال والقناة','مدينة الجمال والقناة','الجمال والقناة','المدينة بقت بتاعتك.. والكل عايز يتصور قدام بيتك كأنه متحف مفتوح.'),
+ {t:'gojail',n:'اتقبض عليك',ic:'👮',sub:'على القسم'},
+ P('الغردقة',300,'gr','الغوص والبحر الأحمر','الغوص والبحر الأحمر','الغوص','نزلت تغوص تشوف الشعب المرجانية.. لقيت سمكة بتبصلك وبتسألك: "معاك فكة؟"'),
+ P('أسوان',300,'gr','النوبة والكركديه','النوبة والكركديه','الكركديه','الكركديه بقى بتاعك.. ساقع ومظبوط، بس الإيجار هيخلي دمك يغلي أكتر منه.'),
+ {t:'chest',n:'جمعية',ic:'👵'},
+ P('الأقصر',320,'gr','أكبر متحف مفتوح','أكبر متحف مفتوح','المعابد','اشتريت المعابد.. والتمثال الفرعوني بصلك وقال: "إنت متأكد إن معاك فلوس تكمل؟"'),
+ {t:'st',n:'مطار القاهرة',p:200,ic:'✈️',fe:'✈️',fl:'الطيارة','fj':'الطيارة اتأخرت 5 ساعات.. بس كويس، لحقت تقرا عقد المطار.'},
+ {t:'chance',n:'حظ',ic:'🎲'},
+ P('الإسكندرية',350,'db','عروس البحر المتوسط','عروس البحر المتوسط','البحر','اشتريت البحر.. بس أول ما نزلت رجلك المية طلعت بردان وبتترعش.'),
+ {t:'tax',n:'ضريبة المبيعات',p:100,ic:'🧾'},
+ P('شرم الشيخ',400,'db','مدينة السلام','🐠','مدينة السلام','اشتريت شرم الشيخ.. قاعد في فندق ببلاش! أه والله، لحد ما تيجي الفاتورة.')
+];
+TILES[25]=P('الفيوم',260,'yl','السواقي والبط','🦆','السواقي','السواقي بتلف على فلوسك.. والبط بيقول كواك على كل جنيه.');
+TILES.forEach((t,i)=>{t.i=i;if(t.t==='prop'){const b=Math.max(2,Math.round(t.p*0.08/2)*2);t.rent=[b,b*5,b*15,b*40,b*60,b*80];t.hc=GR[t.g].h;}});
+const GROUP_TILES=g=>TILES.filter(t=>t.g===g);
+function gridPos(i){
+ if(i===0)return[11,11]; if(i<10)return[11,11-i]; if(i===10)return[11,1];
+ if(i<20)return[11-(i-10),1]; if(i===20)return[1,1]; if(i<30)return[1,1+(i-20)];
+ if(i===30)return[1,11]; return[1+(i-30),11];
+}
+const axis=k=>k===1?0.75/12:k===11?(12-0.75)/12:(1.5+(k-2)+0.5)/12;
+
+const TOKENS=[{e:'🛺',n:'توكتوك'},{e:'🐫',n:'جمل'},{e:'🚐',n:'ميكروباص'},{e:'🧆',n:'طعمية'}];
+const PCOL=['#e0405a','#2fbf8f','#e6a817','#5b8cff'];
+const CPU_NAMES=['الأسطى عوضين','الحاجة نوال','المعلم سيد','دكتور حسام'];
+const START_CASH=1500,SALARY=200,JAIL_FINE=50;
+
+const CHANCE=[{t:'لقيت ٢٠٠ جنيه في جيب الجاكيت الشتوي! بس اكتشفت إنهم فلوس السنة اللي فاتت ومش هيجيبوا حاجة دلوقتي.',k:'money',v:200},
+ {t:'ركبت ميكروباص وسألت: "الأجرة كام؟" السواق قالك: "ادفع وانت ساكت". روح لمحطة رمسيس.',k:'goto',to:5},
+ {t:'دخلت ماتش من غير تذكرة وقلت للأمن: "أنا الكابتن!". غرامة ١٥٠ جنيه عشان خيال واسع.',k:'money',v:-150},
+ {t:'النت فصل في نص الماتش.. اتصلت بخدمة العملاء قالولك: "اعمل ريستارت للراوتر". ادفع ١٢٠ جنيه أعصاب.',k:'money',v:-120},
+ {t:'عديت الشارع من غير ما تبص.. وكان في كمين بيراقب حركاتك! اتقبض عليك.',k:'jail'},
+ {t:'مامتك اتصلت تسأل: "إنت فين؟" اتلخبطت وركبت عكس الاتجاه. ارجع ٣ خانات.',k:'back',v:3},
+ {t:'عيد ميلادك النهاردة! كل لاعب يدفعلك ٥٠ جنيه بدل التورتة اللي اتاكلت قبل ما تيجي.',k:'each',v:50},
+ {t:'قلت للسواق: "نزلني هنا يا أسطى" فنزلك في نص الشارع! كل لاعب ياخد منك ٤٠ جنيه حق المرمطة.',k:'each',v:-40},
+ {t:'نزلتلك علاوة مفاجأة! خد ١٥٠ جنيه.. بس لسه في ضريبة على الفرحة.',k:'money',v:150},
+ {t:'القهوة اتدلقت على القميص الأبيض قبل خروجة مهمة. مغسلة مستعجل ٦٠ جنيه.',k:'money',v:-60},
+ {t:'معاك واسطة تقيلة: "أنا أعرف حد بيخلصها في ثانية". اخرج من القسم مجانًا.',k:'free'},
+ {t:'العمارة عايزة ترميم.. والمقاول قالك: "يومين وهتبقى زي الفل". ادفع ٢٥ جنيه لكل بيت و١٠٠ لكل فندق.',k:'repair',h:25,hot:100},
+ {t:'روح لأقرب محطة مواصلات.. ولو ليها صاحب ادفعله ضعف الإيجار وادعي إنه ما يزودش.',k:'near',w:'st'},
+ {t:'سافر الإسكندرية تغير جو! ولو عديت البداية اقبض مرتبك.',k:'goto',to:37},
+ {t:'رحلة سريعة لشرم الشيخ! ولو عديت البداية اقبض مرتبك.',k:'goto',to:39},
+ {t:'الحنفية بتسرب من أسبوع ومحدش قفلها! روح لأقرب شركة خدمات.',k:'near',w:'ut'},
+ {t:'شفت إعلان "خصم ٨٠٪" واشتريت حاجة مش محتاجها.. وطلع الخصم على الكرتونة بس. ادفع ٩٠ جنيه.',k:'money',v:-90},
+ {t:'كسبت في سحب أونلاين وهمي بس الفلوس طلعت حقيقية! خد ١٠٠ جنيه.',k:'money',v:100},
+ {t:'صاحبك قالك: "هات سلف وهردهملك أول الشهر".. وأول الشهر جه واختفى. ادفع ٨٠ جنيه.',k:'money',v:-80},
+ {t:'فتحت التلاجة لقيت أكل جاهز من إمبارح.. وفرت أكل اليوم! خد ٧٠ جنيه.',k:'money',v:70},
+ {t:'ركنت العربية في مكان ممنوع وقلت: "خمس دقايق بس". الخمس دقايق بقوا ساعة! غرامة ١٣٠ جنيه.',k:'money',v:-130},
+ {t:'تليفونك وقع على وشه.. الشاشة سليمة بس البطاريه قالتلك: "أنا تعبت". ادفع ١١٠ جنيه.',k:'money',v:-110},
+ {t:'طلبت أكل دليفري وقالولك: "الطيار في الطريق".. الطيار لف البلد كلها. ادفع ٦٠ جنيه.',k:'money',v:-60},
+ {t:'لقيت ورقة كوتشينة وحظك اشتغل! خد ١٢٠ جنيه من البنك.',k:'money',v:120},
+ {t:'الجار سأل: "هو إنت بتعمل إيه في البلكونة؟" توترت ورجعت خطوتين لورا. ارجع ٢ خانة.',k:'back',v:2},
+ {t:'عملت دايت لمدة ساعتين.. وبعدين كسبت رهان إنك هتكمل! خد ٩٠ جنيه.',k:'money',v:90},
+ {t:'الريموت ضاع في الكنبة وقعدت تدور عليه نص ساعة.. وطلع في إيدك! ادفع ٥٠ جنيه.',k:'money',v:-50},
+ {t:'فرح قريبك كان محتاج مسقفاتية.. وأنت قمت بالواجب! خد ١٤٠ جنيه.',k:'money',v:140},
+ {t:'الواي فاي بتاع الجيران كان شغال وفجأة قفل! ادفع ١٠٠ جنيه باقة طوارئ.',k:'money',v:-100},
+ {t:'اطلع على البداية واقبض المرتب وابدأ صفحة جديدة!',k:'goto',to:0},
+ {t:'كسبت جائزة "أحسن واحد بيأجل شغله لبكرة"! خد ٨٠ جنيه.',k:'money',v:80},
+ {t:'المروحة بتعمل صوت طيارة هليكوبتر ومش بتبرد! ادفع ٧٥ جنيه صيانة.',k:'money',v:-75}];
+const CHEST=[{t:'قبضت الجمعية يا معلم! خد ٢٠٠ جنيه.. بس باقي الجمعية باصينلك بنظرة "إنت هتكمل؟".',k:'money',v:200},
+ {t:'الحاجة بعتتلك حلة محشي مشكل.. كل لاعب يدفعلك ٣٠ جنيه تمن الريحة الحلوة.',k:'each',v:30},
+ {t:'الدكتور قالك: "قلل سكريات".. وإنت طلعت من العيادة جبت حاجة حلوة! ادفع ١٠٠ جنيه.',k:'money',v:-100},
+ {t:'عيدية من الخال! خد ١٠٠ جنيه.. ومكتوب عليها "تتصرف في الطوارئ بس".',k:'money',v:100},
+ {t:'خناقة على ركنة عربية قدام البيت.. والنتيجة القسم على طول! اتقبض عليك.',k:'jail'},
+ {t:'مصاريف وكراسات وأقلام بتختفي لوحدها في البيت! ادفع ١٥٠ جنيه.',k:'money',v:-150},
+ {t:'رصيد هدية من الشركة.. خد ٥٠ جنيه وافرح بيهم قبل ما يخلصوا في ثانية.',k:'money',v:50},
+ {t:'كارت واسطة: "اللي أنا عايزه هيتم". اخرج من القسم مجانًا.',k:'free'},
+ {t:'بعت حاجة قديمة كانت مركونة من سنين.. خد ٨٠ جنيه والفضا وسع.',k:'money',v:80},
+ {t:'قلت للشلة: "الحساب النهاردة عليا".. ونسيت إن عددهم كبير! ادفع ٤٠ جنيه لكل لاعب.',k:'each',v:-40},
+ {t:'رجعلك مبلغ بالغلط في الحساب.. خد ١٢٠ جنيه وخليك ساكت.',k:'money',v:120},
+ {t:'العربية وقفت فجأة وقالتلك: "أنا محتاجة راحة". ادفع ١١٠ جنيه ميكانيكي.',k:'money',v:-110},
+ {t:'ارجع للبداية واقبض المرتب وقول يا فتاح!',k:'goto',to:0},
+ {t:'مصاريف صيانة البيوت والفنادق: ادفع ٤٠ جنيه لكل بيت و١١٥ لكل فندق.',k:'repair',h:40,hot:115},
+ {t:'عملت شاي بالنعناع مظبوط للكل.. خد ٦٠ جنيه إكرامية.',k:'money',v:60},
+ {t:'نسيت المفتاح جوه الشقة والنجار جه في دقيقتين! ادفع ٩٥ جنيه.',k:'money',v:-95},
+ {t:'كسبت مسابقة "أسرع واحد يرد على الواتس بعد أسبوع"! خد ٧٥ جنيه.',k:'money',v:75},
+ {t:'البطيخة طلعت حمرا ومسكره من غير ما تخبط عليها! خد ٨٥ جنيه.',k:'money',v:85},
+ {t:'الأنبوبة خلصت وقت تحضير الشاي! ادفع ١٢٥ جنيه طوارئ.',k:'money',v:-125},
+ {t:'تذكرت كلمة السر من أول مرة من غير "نسيت كلمة السر"! خد ٦٥ جنيه.',k:'money',v:65}];
+const CHARGES=['الركن صف تالت وقفل الشارع وقال للناس: "دقيقتين وجاي" وقعد ساعة ونص',
+ 'تشغيل أغاني بصوت عالي الساعة ٣ الفجر والادعاء إن ده "تمرين استرخاء"',
+ 'الهروب من حساب القهوة وقول "بكرة الحساب" لمدة سنتين متواصلتين',
+ 'السير عكس الاتجاه والقول إن الجي بي إس كان بيهزر معاه',
+ 'أكل آخر حتة في الصينية والادعاء إن حد تاني أكلها ومشي',
+ 'القول إنه "يعرف ناس تقيلة" وهو معاه رقم غلط',
+ 'الضحك بصوت عالي في هدوء تام كأنه شاف نكتة من عشر سنين',
+ 'محاولة إقناع الكمسري إن التذكرة القديمة "بتتجدد تلقائي"'];
+const DEFENSE=['المتهم قال: "والله أنا كنت ماشي في حالي"، والشاهد قال: "كان ماشي في نص الميدان".',
+ 'المحامي قال: "موكلي بريء براءة الذئب من دم البسبوسة"، وبعدين سأل: "إحنا فين؟".',
+ 'المتهم طلب يتصل بصاحبه.. وصاحبه قال: "أنا معرفوش، ده كان قاعد جنبي".',
+ 'المتهم قال: "أنا مكنتش قاصد، رجلي هي اللي دوست بنزين لوحدها".'];
+const VERDICT=['حكمت المحكمة بحبس المتهم {n} أدوار مع الشغل.. وممنوع الكلام في الموضوع ده تاني.',
+ 'بعد المداولة وشرب كوباية شاي، حكمت المحكمة بحبس المتهم {n} أدوار.. والحكم نافذ.',
+ 'حكمت المحكمة بحبس المتهم {n} أدوار.. والاعتراض مرفوض شكلاً وموضوعاً.'];
+const J={
+ salary:['قبضت المرتب! نزل الصبح واختفى العصر كأنه كان معدي يسلم.',
+ 'المرتب وصل.. وقبل ما تفرح بيه كانت الفواتير واقفة على الباب مستنية.',
+ 'قبضت! والنتيجة إنك بقيت غني لمدة خمس دقايق كاملة.',
+ 'المرتب نزل.. وحسيت إنك بطل فيلم أكشن والميزانية خلصت في أول مشهد.'],
+ rent:['الإيجار وصل.. وصاحب الملك مبتسم ابتسامة واحد كسب لوتري.',
+ 'ادفع الإيجار وانت ساكت.. الدنيا دي كلها إيجارات ومواعيد.',
+ 'صاحب الأرض عمل بفلوس الإيجار عزومة.. وانت المعزوم اللي دفع الحساب.',
+ 'الفلوس راحت لصاحبها.. وبصلك وقالك: "نورتنا، تعال كل يوم".'],
+ tax:['الضريبة جاتلك في وقتها المظبوط.. قبل ما تفكر تحوش جنيه.',
+ 'ادفع الضريبة وقول: "عشان البلد تمشي".. والبلد ماشية وإنت واقف.',
+ 'فاتورة نزلت من السما.. ومكتوب عليها اسمك بخط عريض.'],
+ ahwa:['قعدت على القهوة وشربت شاي بالنعناع.. والدنيا هدأت شوية.',
+ 'القهوة روّقت دماغك.. ونسيت كل الهموم لحد ما ييجي الدور اللي بعده.',
+ 'قاعد على القهوة والدومينو شغال.. واللي يخسر هو اللي هيقوم يعمل شاي.',
+ 'أحلى قعدة في الدنيا.. شاي وراحة بال وضحك على الفاضي.'],
+ build:['المقاول قالك: "يومين بالظبط وهتستلم".. ويومين عنده يعني تلات أسابيع.',
+ 'الأسطى جه ومعاه العدة.. وقالك: "الحيطة دي عايزة شغل بمزاج".',
+ 'العمال بدأوا البناء.. وأول سؤال سألوه: "هو فين الشاي؟".',
+ 'الطوب اترص.. والأسطى قالك: "سيبه يرتاح شوية قبل ما نكمل".'],
+ hotel:['فندق خمس نجوم! الفطار فول وطعمية بس بالبرستيج.',
+ 'الفندق اتفتح.. وأول زبون دخل سأل: "هو الواي فاي سريع؟".',
+ 'بقيت صاحب فندق! والناس كلها بتسأل: "هو في خصم للقرايب؟".',
+ 'الفندق جاهز.. والمنظر يخلي أي حد يحجز إقامة دايمة.'],
+ buy:['اتمضى العقد وبقت بتاعتك.. ولسه هتشوف مفاجآت الجيران.',
+ 'مبروك الملكية الجديدة.. والكل بيقولك: "الله يباركلك، هتعمل إيه هنا؟".',
+ 'اشتريت المكان.. وبدأت رحلة الصيانة والمصاريف بابتسامة عريضة.'],
+ broke:['فلّست يا معلم! الجيب بقى فاضي لدرجة إن الهوا بيصفر فيه.',
+ 'الرصيد بقى صفر.. حتى الفكة اللي في الجيب خلصت.',
+ 'خرجت من السباق.. بس الذكريات والضحك لسه مكملين.'],
+ win:['مبروك يا بطل! كسبت لولاميزا بجدارة وضحك.',
+ 'بقيت ملك اللعبة.. والباقي كلهم بيقولوا: "إزاي عملها دي؟".']
+};
+const TIPS=[
+ 'نصيحة: كمّل مجموعة لون كاملة قبل ما تبني، لأن الإيجار بيتضاعف.',
+ 'نصيحة: المحطات والميكروباصات مش غالية، والإيجار بيزيد كل ما تجمع أكتر.',
+ 'نصيحة: ما تصرفش كل فلوسك على الشراء.. سيب 200 ج للإيجار والغرامات.',
+ 'نصيحة: لو كمّلت مجموعة ابني بيوت بالتساوي، والفندق أغلى إيجار في اللعبة.',
+ 'نصيحة: الرهن بيدّيك فلوس سريعة، بس ملكيتك بتفقد الإيجار لحد ما تفكه.',
+ 'نصيحة: الدبلة بتدّيك دور تاني، بس 3 دبل ورا بعض معناها القسم.',
+ 'نصيحة: كارت الواسطة بيخرجك من القسم.. احتفظ بيه لوقت الزنقة.',
+ 'نصيحة: التجارة بتخليك تكمّل مجموعة بسرعة.. ادفع أكتر من سعرها ولو احتجت.'
+];
+
+let SET={sound:true,cuts:true,voice:true,music:false,track:0,vol:.6,name:''};
+try{const s=JSON.parse(localStorage.getItem('bhz_set2')||'null');if(s)SET=Object.assign(SET,s);}catch(e){}
+const saveSet=()=>{try{localStorage.setItem('bhz_set2',JSON.stringify(SET));}catch(e){}};
+
+let AC=null,MASTER=null,SFXBUS=null,MUSBUS=null,NOISE=null;
+function ctx(){
+ if(AC)return AC;
+ try{
+  AC=new(window.AudioContext||window.webkitAudioContext)();
+  const comp=AC.createDynamicsCompressor();MASTER=AC.createGain();MASTER.gain.value=.9;MASTER.connect(comp);comp.connect(AC.destination);
+  SFXBUS=AC.createGain();SFXBUS.gain.value=1;SFXBUS.connect(MASTER);
+  MUSBUS=AC.createGain();MUSBUS.gain.value=SET.vol*.55;MUSBUS.connect(MASTER);
+  const len=AC.sampleRate,buf=AC.createBuffer(1,len,AC.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;NOISE=buf;
+ }catch(e){AC=null;}
+ return AC;
+}
+function tone(f,d=.12,type='square',v=.05,at=0,bus){
+ if(!SET.sound||!ctx())return;
+ try{const t=AC.currentTime+at,o=AC.createOscillator(),g=AC.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g);g.connect(bus||SFXBUS);o.start(t);o.stop(t+d+.02);}catch(e){}
+}
+function noise(d=.08,v=.05,at=0,hp=2000,bus){
+ if(!SET.sound||!ctx())return;
+ try{const t=AC.currentTime+at,s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();
+  s.buffer=NOISE;f.type='highpass';f.frequency.value=hp;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  s.connect(f);f.connect(g);g.connect(bus||SFXBUS);s.start(t,Math.random()*.5);s.stop(t+d+.02);}catch(e){}
+}
+function playTone(freq,dur,type='sine',vol=.08,at=0,slideTo=null,bus){
+ if(!SET.sound||!ctx())return;
+ try{
+  const t=AC.currentTime+at;
+  const o=AC.createOscillator();
+  const g=AC.createGain();
+  o.type=type;
+  o.frequency.setValueAtTime(freq,t);
+  if(slideTo)o.frequency.exponentialRampToValueAtTime(Math.max(20,slideTo),t+dur);
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.linearRampToValueAtTime(vol,t+.012);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(bus||SFXBUS);
+  o.start(t);o.stop(t+dur+.03);
+ }catch(e){}
+}
+function playNoise(dur,vol=.08,at=0,freq=1200,q=1.2,filterType='bandpass',bus){
+ if(!SET.sound||!ctx())return;
+ try{
+  const t=AC.currentTime+at;
+  const s=AC.createBufferSource();
+  s.buffer=NOISE;
+  const f=AC.createBiquadFilter();
+  f.type=filterType;f.frequency.setValueAtTime(freq,t);f.Q.value=q;
+  const g=AC.createGain();
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.linearRampToValueAtTime(vol,t+.01);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(f);f.connect(g);g.connect(bus||SFXBUS);
+  s.start(t,Math.random()*0.4);s.stop(t+dur+.03);
+ }catch(e){}
+}
+function playChime(notes,spacing=.09,dur=.28,type='triangle',vol=.09,at=0){
+ notes.forEach((f,idx)=>{
+  playTone(f,dur,type,vol,at+idx*spacing,null);
+  playTone(f*2,dur*.6,'sine',vol*.28,at+idx*spacing,null);
+ });
+}
+
+const sfx={
+ dice(){
+  if(!SET.sound)return;
+  for(let i=0;i<8;i++){
+   const t=i*.065;
+   playNoise(.045,.14,t,1900+Math.random()*900,2.2,'bandpass');
+   playTone(210+Math.random()*140,.04,'triangle',.06,t,95);
+  }
+  playNoise(.07,.16,.54,1400,1.5,'bandpass');
+  playTone(150,.08,'sine',.12,.54,60);
+ },
+ step(){
+  playNoise(.035,.09,0,1600,2.5,'bandpass');
+  playTone(340,.045,'sine',.07,0,170);
+ },
+ coin(){
+  playTone(1318.5,.16,'sine',.12,0,null);
+  playTone(1975.5,.28,'sine',.12,.075,null);
+  playTone(2637,.22,'triangle',.06,.075,null);
+ },
+ pay(){
+  playTone(392,.16,'triangle',.11,0,293.66);
+  playTone(261.63,.26,'sawtooth',.06,.11,174.61);
+  playNoise(.06,.05,.05,900,1.2,'lowpass');
+ },
+ buy(){
+  playChime([523.25,659.25,783.99,1046.5],.085,.32,'triangle',.11,0);
+ },
+ build(){
+  for(let i=0;i<4;i++){
+   const t=i*.17;
+   playNoise(.075,.18,t,850,1.4,'bandpass');
+   playTone(135,.09,'sine',.16,t,52);
+   playTone(420,.05,'triangle',.05,t+.02,220);
+  }
+ },
+ siren(){
+  if(!SET.sound)return;
+  for(let i=0;i<4;i++){
+   const t=i*.42;
+   playTone(620,.21,'sawtooth',.065,t,920);
+   playTone(920,.21,'sawtooth',.065,t+.21,620);
+  }
+ },
+ fan(){
+  playChime([523.25,659.25,783.99],.08,.22,'triangle',.1,0);
+  playChime([783.99,1046.5,1318.5],.09,.45,'triangle',.12,.26);
+ },
+ sad(){
+  playTone(392,.32,'triangle',.1,0,369.99);
+  playTone(349.23,.34,'triangle',.1,.32,329.63);
+  playTone(293.66,.55,'sawtooth',.06,.64,220);
+ },
+ card(){
+  playNoise(.09,.12,0,2800,1.8,'bandpass');
+  playTone(587.33,.14,'sine',.09,.03,880);
+ },
+ gavel(){
+  if(!SET.sound)return;
+  playNoise(.09,.28,0,750,1.1,'lowpass');
+  playTone(115,.22,'sine',.28,0,42);
+  playTone(240,.08,'triangle',.1,0,90);
+ },
+ pop(){
+  playTone(360,.11,'sine',.12,0,760);
+ },
+ laugh(){
+  for(let i=0;i<5;i++){
+   const t=i*.09;
+   playTone(380+i*28,.075,'triangle',.08,t,520+i*20);
+  }
+ },
+ hop(){
+  playTone(260,.06,'sine',.08,0,440);
+ }
+};
+function playSfx(n){try{if(sfx[n])sfx[n]();}catch(e){}}
+
+const TRACKS=[
+ {n:'ليالي القاهرة',bpm:96,root:50,sc:[0,1,4,5,7,8,10,12,13,16,17,19],rh:'maqsum',style:'oud'},
+ {n:'فرح شعبي',bpm:122,root:48,sc:[0,2,4,5,7,9,10,12,14,16,17,19],rh:'baladi',style:'mizmar'},
+ {n:'نسمة النيل',bpm:72,root:50,sc:[0,2,3,5,7,8,11,12,14,15,17,19],rh:'slow',style:'ney'}
+];
+const RHY={
+ maqsum:{D:[0,8],T:[2,6,12],K:[4,10,14]},
+ baladi:{D:[0,2,8],T:[6,12,14],K:[4,10]},
+ slow:{D:[0,10],T:[6],K:[]}
+};
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+let MUS={on:false,timer:null,step:0,next:0,motif:[],bar:0,tr:null};
+function drum(kind,t,vol=1){
+ if(!AC)return;
+ if(kind==='D'){const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(170,t);o.frequency.exponentialRampToValueAtTime(55,t+.12);
+  g.gain.setValueAtTime(.55*vol,t);g.gain.exponentialRampToValueAtTime(.001,t+.25);o.connect(g);g.connect(MUSBUS);o.start(t);o.stop(t+.3);}
+ else{const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=NOISE;f.type='bandpass';f.frequency.value=kind==='T'?3400:2200;f.Q.value=1.4;
+  g.gain.setValueAtTime((kind==='T'?.35:.16)*vol,t);g.gain.exponentialRampToValueAtTime(.001,t+(kind==='T'?.09:.05));s.connect(f);f.connect(g);g.connect(MUSBUS);s.start(t,Math.random()*.5);s.stop(t+.12);}
+}
+function pluck(freq,t,dur,vol,style){
+ if(!AC)return;
+ const o=AC.createOscillator(),o2=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();
+ if(style==='ney'){o.type='sine';o2.type='triangle';f.frequency.value=2600;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol*.9,t+.08);g.gain.setTargetAtTime(.0001,t+dur*.8,.12);
+  const lfo=AC.createOscillator(),lg=AC.createGain();lfo.frequency.value=5.5;lg.gain.value=freq*.006;lfo.connect(lg);lg.connect(o.frequency);lg.connect(o2.frequency);lfo.start(t);lfo.stop(t+dur+.5);}
+ else if(style==='mizmar'){o.type='sawtooth';o2.type='square';f.frequency.value=1800;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol*.55,t+.02);g.gain.setTargetAtTime(.0001,t+dur*.7,.06);}
+ else{o.type='triangle';o2.type='sawtooth';f.frequency.setValueAtTime(3200,t);f.frequency.exponentialRampToValueAtTime(700,t+.4);
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+Math.max(.35,dur));}
+ f.type='lowpass';o.frequency.value=freq;o2.frequency.value=freq*1.004;
+ o.connect(f);o2.connect(f);f.connect(g);g.connect(MUSBUS);
+ o.start(t);o2.start(t);o.stop(t+dur+.6);o2.stop(t+dur+.6);
+}
+function makeMotif(tr){
+ const m=[];let idx=4;
+ for(let s=0;s<32;s+=2){
+  if(Math.random()<.22){m.push(null);continue;}
+  idx=Math.max(0,Math.min(tr.sc.length-1,idx+rnd([-2,-1,-1,0,1,1,2])));
+  m.push({i:idx,l:rnd([2,2,2,4])});
+ }
+ return m;
+}
+function musTick(){
+ if(!MUS.on||!AC)return;
+ const tr=MUS.tr,spb=60/tr.bpm/4;
+ while(MUS.next<AC.currentTime+.35){
+  const s=MUS.step%16,t=MUS.next,r=RHY[tr.rh];
+  if(r.D.includes(s))drum('D',t,1);else if(r.T.includes(s))drum('T',t,1);else if(r.K.includes(s))drum('K',t,1);
+  if(s===0){
+   if(MUS.step%64===0)MUS.motif=makeMotif(tr);
+   const b=tr.root-12;pluck(mtof(b),t,spb*15,.08,'ney');pluck(mtof(b+7),t,spb*15,.04,'ney');
+  }
+  const bar2=Math.floor(MUS.step/16)%2,k=(bar2*16+s);
+  if(k%2===0){
+   const n=MUS.motif[k/2];
+   if(n&&(MUS.step%128<112)){const note=tr.root+tr.sc[n.i]+12;pluck(mtof(note),t,spb*n.l,.1,tr.style);
+    if(Math.random()<.12)pluck(mtof(note+(tr.sc[n.i+1]-tr.sc[n.i]||1)),t-spb*.5>AC.currentTime?t-spb*.5:t,spb,.05,tr.style);}
+  }
+  MUS.next+=spb;MUS.step++;
+ }
+}
+function musStart(){
+ if(!ctx())return;
+ if(AC.state==='suspended')AC.resume();
+ if(MUS.on)return;
+ MUS.tr=TRACKS[SET.track]||TRACKS[0];MUS.on=true;MUS.step=0;MUS.next=AC.currentTime+.1;MUS.motif=makeMotif(MUS.tr);
+ MUS.timer=setInterval(musTick,90);musTick();
+}
+function musStop(){MUS.on=false;clearInterval(MUS.timer);}
+function setMusic(on){SET.music=on;saveSet();on?musStart():musStop();updMusicUI();}
+function setTrack(i){SET.track=i;saveSet();const was=MUS.on;musStop();if(was)musStart();updMusicUI();}
+function setVol(v){SET.vol=v;saveSet();if(MUSBUS)MUSBUS.gain.value=v*.55;}
+document.addEventListener('pointerdown',()=>{ctx();if(AC&&AC.state==='suspended')AC.resume();if(SET.music&&!MUS.on)musStart();},{once:false});
+function updMusicUI(){
+ const b=$('#musBtn');if(b)b.textContent=SET.music?'🎵':'🔇';
+ const p=$('#musPanel');if(p)p.innerHTML=musPanelHTML();
+}
+function musPanelHTML(){
+ return `<b>🎵 الموسيقى</b><div class="row"><button class="btn sm ${SET.music?'bad':'good'}" data-m="tog">${SET.music?'⏸ وقّف':'▶️ شغّل'}</button></div>`+
+  `<div class="seg">${TRACKS.map((t,i)=>`<button data-m="t${i}" class="${SET.track===i?'on':''}">${t.n}</button>`).join('')}</div>`+
+  `<label class="vol">🔊 <input type="range" id="volR" min="0" max="1" step="0.05" value="${SET.vol}" aria-label="مستوى الصوت"></label>`;
+}
+
+let VOICE=null;
+function pickVoice(){
+ if(!('speechSynthesis' in window))return null;
+ const vs=speechSynthesis.getVoices();
+ return vs.find(v=>/^ar[-_]EG/i.test(v.lang))||vs.find(v=>/^ar/i.test(v.lang))||null;
+}
+if('speechSynthesis' in window){try{speechSynthesis.onvoiceschanged=()=>{VOICE=pickVoice();};VOICE=pickVoice();}catch(e){}}
+const AR_DIGITS={'0':'صفر','1':'واحد','2':'اتنين','3':'تلاتة','4':'أربعة','5':'خمسة','6':'ستة','7':'سبعة','8':'تمانية','9':'تسعة','٠':'صفر','١':'واحد','٢':'اتنين','٣':'تلاتة','٤':'أربعة','٥':'خمسة','٦':'ستة','٧':'سبعة','٨':'تمانية','٩':'تسعة'};
+function arSpeechText(s){
+ return String(s||'').replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu,'')
+  .replace(/\d+/g,m=>m.split('').map(ch=>AR_DIGITS[ch]||ch).join(' '))
+  .replace(/\s+/g,' ').trim();
+}
+const AUDIO_MAP={
+ "أحلى قعدة في الدنيا.. شاي وراحة بال وضحك على الفاضي.": "audio/أحلى قعدة في الدنيا شاي وراحة بال وضحك على الفاضي.mp3",
+ "أكل آخر حتة في الصينية والادعاء إن حد تاني أكلها ومشي": "audio/أكل آخر حتة في الصينية والادعاء إن حد تاني أكلها ومشي.mp3",
+ "اتعزمت على غدا \"خفيف\".. لقيت صينية تكفي حي كامل وبتسمع جملة: \"إنت لسه مأكلتش حاجة!\"": "audio/اتعزمت على غدا خفيف لقيت صينية تكفي حي كامل وبتسمع جملة إنت لسه مأكلتش حاجة.mp3",
+ "اتمضى العقد وبقت بتاعتك.. ولسه هتشوف مفاجآت الجيران.": "audio/اتمضى العقد وبقت بتاعتك ولسه هتشوف مفاجآت الجيران.mp3",
+ "ادفع الإيجار وانت ساكت.. الدنيا دي كلها إيجارات ومواعيد.": "audio/ادفع الإيجار وانت ساكت الدنيا دي كلها إيجارات ومواعيد.mp3",
+ "ادفع الضريبة وقول: \"عشان البلد تمشي\".. والبلد ماشية وإنت واقف.": "audio/ادفع الضريبة وقول عشان البلد تمشي والبلد ماشية وإنت واقف.mp3",
+ "ارجع للبداية واقبض المرتب وقول يا فتاح!": "audio/ارجع للبداية واقبض المرتب وقول يا فتاح.mp3",
+ "اشتريت أحسن عفش في البلد.. بس النجار قالك: \"الكنبة هتوصل بعد ما ابنك يتخرج\".": "audio/اشتريت أحسن عفش في البلد بس النجار قالك الكنبة هتوصل بعد ما ابنك يتخرج.mp3",
+ "اشتريت الأسمنت.. وجارك أول واحد خبط عليك وقالك: \"سلفني شوية عشان هرمم البلكونة\".": "audio/اشتريت الأسمنت وجارك أول واحد خبط عليك وقالك سلفني شوية عشان هرمم البلكونة.mp3",
+ "اشتريت البحر.. بس أول ما نزلت رجلك المية طلعت بردان وبتترعش.": "audio/اشتريت البحر بس أول ما نزلت رجلك المية طلعت بردان وبتترعش.mp3",
+ "اشتريت الشارع كله.. بس التوكتوك اللي قدامك قرر يعمل فرح في النص ومش هيتحرك قبل بكرة.": "audio/اشتريت الشارع كله بس التوكتوك اللي قدامك قرر يعمل فرح في النص ومش هيتحرك قبل بكرة.mp3",
+ "اشتريت المعابد.. والتمثال الفرعوني بصلك وقال: \"إنت متأكد إن معاك فلوس تكمل؟\"": "audio/اشتريت المعابد والتمثال الفرعوني بصلك وقال إنت متأكد إن معاك فلوس تكمل.mp3",
+ "اشتريت المكان.. وبدأت رحلة الصيانة والمصاريف بابتسامة عريضة.": "audio/اشتريت المكان وبدأت رحلة الصيانة والمصاريف بابتسامة عريضة.mp3",
+ "اطلع على البداية واقبض المرتب وابدأ صفحة جديدة!": "audio/اطلع على البداية واقبض المرتب وابدأ صفحة جديدة.mp3",
+ "الأسطى جه ومعاه العدة.. وقالك: \"الحيطة دي عايزة شغل بمزاج\".": "audio/الأسطى جه ومعاه العدة وقالك الحيطة دي عايزة شغل بمزاج.mp3",
+ "الأنبوبة خلصت وقت تحضير الشاي! ادفع ١٢٥ جنيه طوارئ.": "audio/الأنبوبة خلصت وقت تحضير الشاي ادفع ١٢٥ جنيه طوارئ.mp3",
+ "الإيجار وصل.. وصاحب الملك مبتسم ابتسامة واحد كسب لوتري.": "audio/الإيجار وصل وصاحب الملك مبتسم ابتسامة واحد كسب لوتري.mp3",
+ "البضاعة مكتوب عليها \"مستورد فاخر\".. وهي متقفلة في ورشة تحت بير السلم من الصبح.": "audio/البضاعة مكتوب عليها مستورد فاخر وهي متقفلة في ورشة تحت بير السلم من الصبح.mp3",
+ "البطيخة طلعت حمرا ومسكره من غير ما تخبط عليها! خد ٨٥ جنيه.": "audio/البطيخة طلعت حمرا ومسكرة من غير ما تخبط عليها خد ٨٥ جنيه.mp3",
+ "البلد بقت بتاعتك.. والناس كلها بتسألك: \"الفرح إمتى والعشا إمتى؟\"": "audio/البلد بقت بتاعتك والناس كلها بتسألك الفرح إمتى والعشا إمتى.mp3",
+ "البلد بقت بتاعتك.. وكل الناس جاية تباركلك وعايزة حتة جلاش قبل ما تمشي.": "audio/البلد بقت بتاعتك وكل الناس جاية تباركلك وعايزة حتة جلاش قبل ما تمشي.mp3",
+ "الجار سأل: \"هو إنت بتعمل إيه في البلكونة؟\" توترت ورجعت خطوتين لورا. ارجع ٢ خانة.": "audio/الجار سأل هو إنت بتعمل إيه في البلكونة توترت ورجعت خطوتين لورا ارجع ٢ خانة.mp3",
+ "الحاجة بعتتلك حلة محشي مشكل.. كل لاعب يدفعلك ٣٠ جنيه تمن الريحة الحلوة.": "audio/الحاجة بعتتلك حلة محشي مشكل كل لاعب يدفعلك ٣٠ جنيه تمن الريحة الحلوة.mp3",
+ "الحنفية بتسرب من أسبوع ومحدش قفلها! روح لأقرب شركة خدمات.": "audio/الحنفية بتسرب من أسبوع ومحدش قفلها روح لأقرب شركة خدمات.mp3",
+ "الدكتور قالك: \"قلل سكريات\".. وإنت طلعت من العيادة جبت حاجة حلوة! ادفع ١٠٠ جنيه.": "audio/الدكتور قالك قلل سكريات وإنت طلعت من العيادة جبت حاجة حلوة ادفع ١٠٠ جنيه.mp3",
+ "الرصيد بقى صفر.. حتى الفكة اللي في الجيب خلصت.": "audio/الرصيد بقى صفر حتى الفكة اللي في الجيب خلصت.mp3",
+ "الركن صف تالت وقفل الشارع وقال للناس: \"دقيقتين وجاي\" وقعد ساعة ونص": "audio/الركن صف تالت وقفل الشارع وقال للناس دقيقتين وجاي وقعد ساعة ونص.mp3",
+ "الريموت ضاع في الكنبة وقعدت تدور عليه نص ساعة.. وطلع في إيدك! ادفع ٥٠ جنيه.": "audio/الريموت ضاع في الكنبة وقعدت تدور عليه نص ساعة وطلع في إيدك ادفع ٥٠ جنيه.mp3",
+ "السير عكس الاتجاه والقول إن الجي بي إس كان بيهزر معاه": "audio/السير عكس الاتجاه والقول إن الجي بي إس كان بيهزر معاه.mp3",
+ "الشجرة بصتلك وقالت: \"أنا صامدة من آلاف السنين، إنت إيه اللي جابك تقف في الشمس؟\"": "audio/الشجرة بصتلك وقالت أنا صامدة من آلاف السنين إنت إيه اللي جابك تقف في الشمس.mp3",
+ "الضحك بصوت عالي في هدوء تام كأنه شاف نكتة من عشر سنين": "audio/الضحك بصوت عالي في هدوء تام كأنه شاف نكتة من عشر سنين.mp3",
+ "الضريبة جاتلك في وقتها المظبوط.. قبل ما تفكر تحوش جنيه.": "audio/الضريبة جاتلك في وقتها المظبوط قبل ما تفكر تحوش جنيه.mp3",
+ "الطوب اترص.. والأسطى قالك: \"سيبه يرتاح شوية قبل ما نكمل\".": "audio/الطوب اترص والأسطى قالك سيبه يرتاح شوية قبل ما نكمل.mp3",
+ "العربية وقفت فجأة وقالتلك: \"أنا محتاجة راحة\". ادفع ١١٠ جنيه ميكانيكي.": "audio/العربية وقفت فجأة وقالتلك أنا محتاجة راحة ادفع ١١٠ جنيه ميكانيكي.mp3",
+ "العسل بقى بتاعك.. بس أول ما تيجي تذوقه تلاقي النحل عامل مظاهرة ضد الإيجار الجديد.": "audio/العسل بقى بتاعك بس أول ما تيجي تذوقه تلاقي النحل عامل مظاهرة ضد الإيجار الجديد.mp3",
+ "العمارة عايزة ترميم.. والمقاول قالك: \"يومين وهتبقى زي الفل\". ادفع ٢٥ جنيه لكل بيت و١٠٠ لكل فندق.": "audio/العمارة عايزة ترميم والمقاول قالك يومين وهتبقى زي الفل ادفع ٢٥ جنيه لكل بيت و١٠٠ لكل فندق.mp3",
+ "العمال بدأوا البناء.. وأول سؤال سألوه: \"هو فين الشاي؟\".": "audio/العمال بدأوا البناء وأول سؤال سألوه هو فين الشاي.mp3",
+ "الفلوس راحت لصاحبها.. وبصلك وقالك: \"نورتنا، تعال كل يوم\".": "audio/الفلوس راحت لصاحبها وبصلك وقالك نورتنا تعال كل يوم.mp3",
+ "الفندق اتفتح.. وأول زبون دخل سأل: \"هو الواي فاي سريع؟\".": "audio/الفندق اتفتح وأول زبون دخل سأل هو الواي فاي سريع.mp3",
+ "الفندق جاهز.. والمنظر يخلي أي حد يحجز إقامة دايمة.": "audio/الفندق جاهز والمنظر يخلي أي حد يحجز إقامة دايمة.mp3",
+ "القهوة اتدلقت على القميص الأبيض قبل خروجة مهمة. مغسلة مستعجل ٦٠ جنيه.": "audio/القهوة اتدلقت على القميص الأبيض قبل خروجة مهمة مغسلة مستعجل ٦٠ جنيه.mp3",
+ "القهوة روّقت دماغك.. ونسيت كل الهموم لحد ما ييجي الدور اللي بعده.": "audio/القهوة روقت دماغك ونسيت كل الهموم لحد ما ييجي الدور اللي بعده.mp3",
+ "القول إنه \"يعرف ناس تقيلة\" وهو معاه رقم غلط": "audio/القول إنه يعرف ناس تقيلة وهو معاه رقم غلط.mp3",
+ "الكركديه بقى بتاعك.. ساقع ومظبوط، بس الإيجار هيخلي دمك يغلي أكتر منه.": "audio/الكركديه بقى بتاعك ساقع ومظبوط بس الإيجار هيخلي دمك يغلي أكتر منه.mp3",
+ "الكشري بقى ببلاش لحد ما تقول \"زود دقة وشطة\"، وهنا بتبدأ فاتورة العلاج في المستشفى.": "audio/الكشري بقى ببلاش لحد ما تقول زود دقة وشطة وهنا بتبدأ فاتورة العلاج في المستشفى.mp3",
+ "الكوبري بقى بتاعك.. والعربيات اللي واقفة عليه من أيام الفراعنة لسه بتسأل: \"هو الكوبري مقفول؟\"": "audio/الكوبري بقى بتاعك والعربيات اللي واقفة عليه من أيام الفراعنة لسه بتسأل هو الكوبري مقفول.mp3",
+ "المتهم طلب يتصل بصاحبه.. وصاحبه قال: \"أنا معرفوش، ده كان قاعد جنبي\".": "audio/المتهم طلب يتصل بصاحبه وصاحبه قال أنا معرفوش ده كان قاعد جنبي.mp3",
+ "المتهم قال: \"أنا مكنتش قاصد، رجلي هي اللي دوست بنزين لوحدها\".": "audio/المتهم قال أنا مكنتش قاصد رجلي هي اللي دوست بنزين لوحدها.mp3",
+ "المتهم قال: \"والله أنا كنت ماشي في حالي\"، والشاهد قال: \"كان ماشي في نص الميدان\".": "audio/المتهم قال والله أنا كنت ماشي في حالي والشاهد قال كان ماشي في نص الميدان.mp3",
+ "المحامي قال: \"موكلي بريء براءة الذئب من دم البسبوسة\"، وبعدين سأل: \"إحنا فين؟\".": "audio/المحامي قال موكلي بريء براءة الذئب من دم البسبوسة وبعدين سأل إحنا فين.mp3",
+ "المدينة بقت بتاعتك.. والكل عايز يتصور قدام بيتك كأنه متحف مفتوح.": "audio/المدينة بقت بتاعتك والكل عايز يتصور قدام بيتك كأنه متحف مفتوح.mp3",
+ "المرتب نزل.. وحسيت إنك بطل فيلم أكشن والميزانية خلصت في أول مشهد.": "audio/المرتب نزل وحسيت إنك بطل فيلم أكشن والميزانية خلصت في أول مشهد.mp3",
+ "المرتب وصل.. وقبل ما تفرح بيه كانت الفواتير واقفة على الباب مستنية.": "audio/المرتب وصل وقبل ما تفرح بيه كانت الفواتير واقفة على الباب مستنية.mp3",
+ "المروحة بتعمل صوت طيارة هليكوبتر ومش بتبرد! ادفع ٧٥ جنيه صيانة.": "audio/المروحة بتعمل صوت طيارة هليكوبتر ومش بتبرد ادفع ٧٥ جنيه صيانة.mp3",
+ "المقاول قالك: \"يومين بالظبط وهتستلم\".. ويومين عنده يعني تلات أسابيع.": "audio/المقاول قالك يومين بالظبط وهتستلم ويومين عنده يعني تلات أسابيع.mp3",
+ "المولد قام والمداح غنى، وإنت اللي هتدفع حساب الحمص والحلاوة لكل اللي هيّصوا.": "audio/المولد قام والمداح غنى وإنت اللي هتدفع حساب الحمص والحلاوة لكل اللي هيصوا.mp3",
+ "النت فصل في نص الماتش.. اتصلت بخدمة العملاء قالولك: \"اعمل ريستارت للراوتر\". ادفع ١٢٠ جنيه أعصاب.": "audio/النت فصل في نص الماتش اتصلت بخدمة العملاء قالولك اعمل ريستارت للراوتر ادفع ١٢٠ جنيه أعصاب.mp3",
+ "الهروب من حساب القهوة وقول \"بكرة الحساب\" لمدة سنتين متواصلتين": "audio/الهروب من حساب القهوة وقول بكرة الحساب لمدة سنتين متواصلتين.mp3",
+ "الواي فاي بتاع الجيران كان شغال وفجأة قفل! ادفع ١٠٠ جنيه باقة طوارئ.": "audio/الواي فاي بتاع الجيران كان شغال وفجأة قفل ادفع ١٠٠ جنيه باقة طوارئ.mp3",
+ "بعت حاجة قديمة كانت مركونة من سنين.. خد ٨٠ جنيه والفضا وسع.": "audio/بعت حاجة قديمة كانت مركونة من سنين خد ٨٠ جنيه والفضا وسع.mp3",
+ "بعد المداولة وشرب كوباية شاي، حكمت المحكمة بحبس المتهم {n} أدوار.. والحكم نافذ.": "audio/بعد المداولة وشرب كوباية شاي حكمت المحكمة بحبس المتهم ثلاثة أدوار والحكم نافذ.mp3",
+ "بقيت صاحب فندق! والناس كلها بتسأل: \"هو في خصم للقرايب؟\".": "audio/بقيت صاحب فندق والناس كلها بتسأل هو في خصم للقرايب.mp3",
+ "بقيت ملك اللعبة.. والباقي كلهم بيقولوا: \"إزاي عملها دي؟\".": "audio/بقيت ملك اللعبة والباقي كلهم بيقولوا إزاي عملها دي.mp3",
+ "تذكرت كلمة السر من أول مرة من غير \"نسيت كلمة السر\"! خد ٦٥ جنيه.": "audio/تذكرت كلمة السر من أول مرة من غير نسيت كلمة السر خد ٦٥ جنيه.mp3",
+ "تشغيل أغاني بصوت عالي الساعة ٣ الفجر والادعاء إن ده \"تمرين استرخاء\"": "audio/تشغيل أغاني بصوت عالي الساعة ٣ الفجر والادعاء إن ده تمرين استرخاء.mp3",
+ "تليفونك وقع على وشه.. الشاشة سليمة بس البطاريه قالتلك: \"أنا تعبت\". ادفع ١١٠ جنيه.": "audio/تليفونك وقع على وشه الشاشة سليمة بس البطارية قالتلك أنا تعبت ادفع ١١٠ جنيه.mp3",
+ "حرير أخميم بقى بتاعك.. وكل قرايبك فجأة بقوا عايزين شال هدية عشان \"المناسبة\".": "audio/حرير أخميم بقى بتاعك وكل قرايبك فجأة بقوا عايزين شال هدية عشان المناسبة.mp3",
+ "حكمت المحكمة بحبس المتهم {n} أدوار مع الشغل.. وممنوع الكلام في الموضوع ده تاني.": "audio/حكمت المحكمة بحبس المتهم ثلاثة أدوار مع الشغل وممنوع الكلام في الموضوع ده تاني.mp3",
+ "حكمت المحكمة بحبس المتهم {n} أدوار.. والاعتراض مرفوض شكلاً وموضوعاً.": "audio/حكمت المحكمة بحبس المتهم ثلاثة أدوار والاعتراض مرفوض شكلا وموضوعا.mp3",
+ "خرجت من السباق.. بس الذكريات والضحك لسه مكملين.": "audio/خرجت من السباق بس الذكريات والضحك لسه مكملين.mp3",
+ "خناقة على ركنة عربية قدام البيت.. والنتيجة القسم على طول! اتقبض عليك.": "audio/خناقة على ركنة عربية قدام البيت والنتيجة القسم على طول اتقبض عليك.mp3",
+ "دخلت ماتش من غير تذكرة وقلت للأمن: \"أنا الكابتن!\". غرامة ١٥٠ جنيه عشان خيال واسع.": "audio/دخلت ماتش من غير تذكرة وقلت للأمن أنا الكابتن غرامة ١٥٠ جنيه عشان خيال واسع.mp3",
+ "رجعلك مبلغ بالغلط في الحساب.. خد ١٢٠ جنيه وخليك ساكت.": "audio/رجعلك مبلغ بالغلط في الحساب خد ١٢٠ جنيه وخليك ساكت.mp3",
+ "رحلة سريعة لشرم الشيخ! ولو عديت البداية اقبض مرتبك.": "audio/رحلة سريعة لشرم الشيخ ولو عديت البداية اقبض مرتبك.mp3",
+ "رصيد هدية من الشركة.. خد ٥٠ جنيه وافرح بيهم قبل ما يخلصوا في ثانية.": "audio/رصيد هدية من الشركة خد ٥٠ جنيه وافرح بيهم قبل ما يخلصوا في ثانية.mp3",
+ "ركبت ميكروباص وسألت: \"الأجرة كام؟\" السواق قالك: \"ادفع وانت ساكت\". روح لمحطة رمسيس.": "audio/ركبت ميكروباص وسألت الأجرة كام السواق قالك ادفع وانت ساكت روح لمحطة رمسيس.mp3",
+ "ركنت العربية في مكان ممنوع وقلت: \"خمس دقايق بس\". الخمس دقايق بقوا ساعة! غرامة ١٣٠ جنيه.": "audio/ركنت العربية في مكان ممنوع وقلت خمس دقايق بس الخمس دقايق بقوا ساعة غرامة ١٣٠ جنيه.mp3",
+ "روح لأقرب محطة مواصلات.. ولو ليها صاحب ادفعله ضعف الإيجار وادعي إنه ما يزودش.": "audio/روح لأقرب محطة مواصلات ولو ليها صاحب ادفعله ضعف الإيجار وادعي إنه ما يزودش.mp3",
+ "سافر الإسكندرية تغير جو! ولو عديت البداية اقبض مرتبك.": "audio/سافر الإسكندرية تغير جو ولو عديت البداية اقبض مرتبك.mp3",
+ "صاحب الأرض عمل بفلوس الإيجار عزومة.. وانت المعزوم اللي دفع الحساب.": "audio/صاحب الأرض عمل بفلوس الإيجار عزومة وانت المعزوم اللي دفع الحساب.mp3",
+ "صاحبك قالك: \"هات سلف وهردهملك أول الشهر\".. وأول الشهر جه واختفى. ادفع ٨٠ جنيه.": "audio/صاحبك قالك هات سلف وهردهملك أول الشهر وأول الشهر جه واختفى ادفع ٨٠ جنيه.mp3",
+ "طلبت أكل دليفري وقالولك: \"الطيار في الطريق\".. الطيار لف البلد كلها. ادفع ٦٠ جنيه.": "audio/طلبت أكل دليفري وقالولك الطيار في الطريق الطيار لف البلد كلها ادفع ٦٠ جنيه.mp3",
+ "عديت الشارع من غير ما تبص.. وكان في كمين بيراقب حركاتك! اتقبض عليك.": "audio/عديت الشارع من غير ما تبص وكان في كمين بيراقب حركاتك اتقبض عليك.mp3",
+ "عملت دايت لمدة ساعتين.. وبعدين كسبت رهان إنك هتكمل! خد ٩٠ جنيه.": "audio/عملت دايت لمدة ساعتين وبعدين كسبت رهان إنك هتكمل خد ٩٠ جنيه.mp3",
+ "عملت شاي بالنعناع مظبوط للكل.. خد ٦٠ جنيه إكرامية.": "audio/عملت شاي بالنعناع مظبوط للكل خد ٦٠ جنيه إكرامية.mp3",
+ "عندك خيل عربي أصيل.. بس الحصان عايز يركبك إنت مش العكس.": "audio/عندك خيل عربي أصيل بس الحصان عايز يركبك إنت مش العكس.mp3",
+ "عيد ميلادك النهاردة! كل لاعب يدفعلك ٥٠ جنيه بدل التورتة اللي اتاكلت قبل ما تيجي.": "audio/عيد ميلادك النهاردة كل لاعب يدفعلك ٥٠ جنيه بدل التورتة اللي اتاكلت قبل ما تيجي.mp3",
+ "عيدية من الخال! خد ١٠٠ جنيه.. ومكتوب عليها \"تتصرف في الطوارئ بس\".": "audio/عيدية من الخال خد ١٠٠ جنيه ومكتوب عليها تتصرف في الطوارئ بس.mp3",
+ "فاتورة نزلت من السما.. ومكتوب عليها اسمك بخط عريض.": "audio/فاتورة نزلت من السما ومكتوب عليها اسمك بخط عريض.mp3",
+ "فتحت التلاجة لقيت أكل جاهز من إمبارح.. وفرت أكل اليوم! خد ٧٠ جنيه.": "audio/فتحت التلاجة لقيت أكل جاهز من إمبارح وفرت أكل اليوم خد ٧٠ جنيه.mp3",
+ "فرح قريبك كان محتاج مسقفاتية.. وأنت قمت بالواجب! خد ١٤٠ جنيه.": "audio/فرح قريبك كان محتاج مسقفاتية وأنت قمت بالواجب خد ١٤٠ جنيه.mp3",
+ "فلّست يا معلم! الجيب بقى فاضي لدرجة إن الهوا بيصفر فيه.": "audio/فلست يا معلم الجيب بقى فاضي لدرجة إن الهوا بيصفر فيه.mp3",
+ "فندق خمس نجوم! الفطار فول وطعمية بس بالبرستيج.": "audio/فندق خمس نجوم الفطار فول وطعمية بس بالبرستيج.mp3",
+ "قاعد على القهوة والدومينو شغال.. واللي يخسر هو اللي هيقوم يعمل شاي.": "audio/قاعد على القهوة والدومينو شغال واللي يخسر هو اللي هيقوم يعمل شاي.mp3",
+ "قبضت الجمعية يا معلم! خد ٢٠٠ جنيه.. بس باقي الجمعية باصينلك بنظرة \"إنت هتكمل؟\".": "audio/قبضت الجمعية يا معلم خد ٢٠٠ جنيه بس باقي الجمعية باصينلك بنظرة إنت هتكمل.mp3",
+ "قبضت المرتب! نزل الصبح واختفى العصر كأنه كان معدي يسلم.": "audio/قبضت المرتب نزل الصبح واختفى العصر كأنه كان معدي يسلم.mp3",
+ "قبضت! والنتيجة إنك بقيت غني لمدة خمس دقايق كاملة.": "audio/قبضت والنتيجة إنك بقيت غني لمدة خمس دقايق كاملة.mp3",
+ "قعدت على القهوة وشربت شاي بالنعناع.. والدنيا هدأت شوية.": "audio/قعدت على القهوة وشربت شاي بالنعناع والدنيا هدأت شوية.mp3",
+ "قلت للسواق: \"نزلني هنا يا أسطى\" فنزلك في نص الشارع! كل لاعب ياخد منك ٤٠ جنيه حق المرمطة.": "audio/قلت للسواق نزلني هنا يا أسطى فنزلك في نص الشارع كل لاعب ياخد منك ٤٠ جنيه حق المرمطة.mp3",
+ "قلت للشلة: \"الحساب النهاردة عليا\".. ونسيت إن عددهم كبير! ادفع ٤٠ جنيه لكل لاعب.": "audio/قلت للشلة الحساب النهاردة عليا ونسيت إن عددهم كبير ادفع ٤٠ جنيه لكل لاعب.mp3",
+ "كارت واسطة: \"اللي أنا عايزه هيتم\". اخرج من القسم مجانًا.": "audio/كارت واسطة اللي أنا عايزه هيتم اخرج من القسم مجانا.mp3",
+ "كسبت جائزة \"أحسن واحد بيأجل شغله لبكرة\"! خد ٨٠ جنيه.": "audio/كسبت جائزة أحسن واحد بيأجل شغله لبكرة خد ٨٠ جنيه.mp3",
+ "كسبت في سحب أونلاين وهمي بس الفلوس طلعت حقيقية! خد ١٠٠ جنيه.": "audio/كسبت في سحب أونلاين وهمي بس الفلوس طلعت حقيقية خد ١٠٠ جنيه.mp3",
+ "كسبت مسابقة \"أسرع واحد يرد على الواتس بعد أسبوع\"! خد ٧٥ جنيه.": "audio/كسبت مسابقة أسرع واحد يرد على الواتس بعد أسبوع خد ٧٥ جنيه.mp3",
+ "لقيت ورقة كوتشينة وحظك اشتغل! خد ١٢٠ جنيه من البنك.": "audio/لقيت ورقة كوتشينة وحظك اشتغل خد ١٢٠ جنيه من البنك.mp3",
+ "لقيت ٢٠٠ جنيه في جيب الجاكيت الشتوي! بس اكتشفت إنهم فلوس السنة اللي فاتت ومش هيجيبوا حاجة دلوقتي.": "audio/لقيت ٢٠٠ جنيه في جيب الجاكيت الشتوي بس اكتشفت إنهم فلوس السنة اللي فاتت ومش هيجيبوا حاجة دلوقتي.mp3",
+ "مامتك اتصلت تسأل: \"إنت فين؟\" اتلخبطت وركبت عكس الاتجاه. ارجع ٣ خانات.": "audio/مامتك اتصلت تسأل إنت فين اتلخبطت وركبت عكس الاتجاه ارجع ٣ خانات.mp3",
+ "مبروك الملكية الجديدة.. والكل بيقولك: \"الله يباركلك، هتعمل إيه هنا؟\".": "audio/مبروك الملكية الجديدة والكل بيقولك الله يباركلك هتعمل إيه هنا.mp3",
+ "مبروك يا بطل! كسبت لولاميزا بجدارة وضحك.": "audio/مبروك يا بطل كسبت لولاميزا بجدارة وضحك.mp3",
+ "محاولة إقناع الكمسري إن التذكرة القديمة \"بتتجدد تلقائي\"": "audio/محاولة إقناع الكمسري إن التذكرة القديمة بتتجدد تلقائي.mp3",
+ "مصاريف صيانة البيوت والفنادق: ادفع ٤٠ جنيه لكل بيت و١١٥ لكل فندق.": "audio/مصاريف صيانة البيوت والفنادق ادفع ٤٠ جنيه لكل بيت و١١٥ لكل فندق.mp3",
+ "مصاريف وكراسات وأقلام بتختفي لوحدها في البيت! ادفع ١٥٠ جنيه.": "audio/مصاريف وكراسات وأقلام بتختفي لوحدها في البيت ادفع ١٥٠ جنيه.mp3",
+ "معاك واسطة تقيلة: \"أنا أعرف حد بيخلصها في ثانية\". اخرج من القسم مجانًا.": "audio/معاك واسطة تقيلة أنا أعرف حد بيخلصها في ثانية اخرج من القسم مجانا.mp3",
+ "نزلت تغوص تشوف الشعب المرجانية.. لقيت سمكة بتبصلك وبتسألك: \"معاك فكة؟\"": "audio/نزلت تغوص تشوف الشعب المرجانية لقيت سمكة بتبصلك وبتسألك معاك فكة.mp3",
+ "نزلتلك علاوة مفاجأة! خد ١٥٠ جنيه.. بس لسه في ضريبة على الفرحة.": "audio/نزلتلك علاوة مفاجأة خد ١٥٠ جنيه بس لسه في ضريبة على الفرحة.mp3",
+ "نسيت المفتاح جوه الشقة والنجار جه في دقيقتين! ادفع ٩٥ جنيه.": "audio/نسيت المفتاح جوه الشقة والنجار جه في دقيقتين ادفع ٩٥ جنيه.mp3",
+ "نص الطلبة بقوا مستأجرين عندك، والباقي بيقولولك: \"ادفعلك آخر السنة بعد النتيجة\".": "audio/نص الطلبة بقوا مستأجرين عندك والباقي بيقولولك ادفعلك آخر السنة بعد النتيجة.mp3",
+ "🛒 اشتري": "audio/اشتريت أحسن عفش في البلد بس النجار قالك الكنبة هتوصل بعد ما ابنك يتخرج.mp3",
+ "محكمة لولاميزا الابتدائية الجلسة منعقدة الآن": "audio/محكمة لولاميزا الابتدائية الجلسة منعقدة الآن.mp3",
+ "المتهم يقف أمام هيئة المحكمة وسماع الأقوال جاري": "audio/المتهم يقف أمام هيئة المحكمة وسماع الأقوال جاري.mp3",
+ "بعد المداولة صدر الحكم والاعتراض غير مقبول": "audio/بعد المداولة صدر الحكم والاعتراض غير مقبول.mp3",
+ "كملت المجموعة كلها دلوقتي تقدر تبني بيوت وفنادق والإيجار بقى نار": "audio/كملت المجموعة كلها دلوقتي تقدر تبني بيوت وفنادق والإيجار بقى نار.mp3"
+};
+let CUR_AUDIO=null;
+function stopAudio(){
+ try{if(CUR_AUDIO){CUR_AUDIO.pause();CUR_AUDIO.currentTime=0;CUR_AUDIO=null;}}catch(e){}
+ try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}
+}
+function normArLookup(s){
+ return String(s||'')
+  .replace(/[\u064B-\u065F\u0670]/g,'')
+  .replace(/[^\u0621-\u064A\u0660-\u0669\u06F0-\u06F90-9\s]+/g,' ')
+  .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+  .replace(/\s+/g,' ').trim();
+}
+function findAudioFile(rawText){
+ const t=String(rawText||'').trim();
+ if(!t)return null;
+ if(AUDIO_MAP[t])return AUDIO_MAP[t];
+ const t3=t.replace(/\{n\}/g,'ثلاثة');
+ if(AUDIO_MAP[t3])return AUDIO_MAP[t3];
+ const nk=normArLookup(t3);
+ for(const [k,v] of Object.entries(AUDIO_MAP)){
+  if(normArLookup(k)===nk)return v;
+ }
+ const pfx=nk.slice(0,26);
+ if(pfx){
+  for(const [k,v] of Object.entries(AUDIO_MAP)){
+   const bnk=normArLookup(k);
+   if(bnk.includes(pfx)||nk.includes(bnk.slice(0,26)))return v;
+  }
+ }
+ return null;
+}
+function playMp3File(src,fall,o={}){
+ return new Promise(res=>{
+  try{
+   if(CUR_AUDIO){CUR_AUDIO.pause();CUR_AUDIO.currentTime=0;CUR_AUDIO=null;}
+   const a=new Audio(encodeURI(src));
+   CUR_AUDIO=a;
+   a.volume=Math.min(1,Math.max(0,(SET.vol??0.6)*(o.vol??1)));
+   let done=false;
+   const finish=(ok)=>{
+    if(done)return;done=true;
+    clearTimeout(guard);
+    if(CUR_AUDIO===a)CUR_AUDIO=null;
+    res(ok);
+   };
+   const guard=setTimeout(()=>finish(true),Math.max(fall+3500,8500));
+   a.onended=()=>finish(true);
+   a.onerror=()=>finish(false);
+   const p=a.play();
+   if(p&&typeof p.then==='function')p.catch(()=>finish(false));
+  }catch(e){res(false);}
+ });
+}
+function say(text,o={}){
+ const clean=arSpeechText(text);
+ const fall=Math.max(2600,clean.length*105);
+ return new Promise(async res=>{
+  if(!SET.voice||!text){setTimeout(res,fall);return;}
+  const mp3=findAudioFile(text);
+  if(mp3){
+   const played=await playMp3File(mp3,fall,o);
+   if(played){res();return;}
+  }
+  if(!clean||!('speechSynthesis' in window)){setTimeout(res,fall);return;}
+  try{
+   speechSynthesis.cancel();
+   const u=new SpeechSynthesisUtterance(clean);
+   const v=VOICE||pickVoice();
+   u.lang=v?v.lang:'ar-EG';
+   if(v)u.voice=v;
+   u.pitch=o.pitch||1;
+   u.rate=o.rate||0.95;
+   u.volume=Math.min(1,Math.max(0,SET.vol??1));
+   let done=false,started=false;
+   const end=()=>{if(done)return;done=true;clearTimeout(guard);res();};
+   const guard=setTimeout(end,fall+6500);
+   u.onstart=()=>{started=true;};
+   u.onend=end;
+   u.onerror=end;
+   speechSynthesis.speak(u);
+   setTimeout(()=>{if(!started&&!done)end();},1400);
+  }catch(e){setTimeout(res,fall);}
+ });
+}
+const VOICES={judge:{pitch:.35,rate:.78,vol:1},card:{pitch:1.45,rate:1.05,vol:1},host:{pitch:1,rate:1,vol:1}};
+
+let S=null;
+const NET={on:false,host:false,room:null,peer:null,seat:-1,code:'',pend:new Map(),pid:0,cpus:0};
+const save=()=>{if(NET.on)return;try{localStorage.setItem('bhz_game2',JSON.stringify(S));}catch(e){}};
+const loadGame=()=>{try{return JSON.parse(localStorage.getItem('bhz_game2')||'null');}catch(e){return null;}};
+const clearGame=()=>{try{localStorage.removeItem('bhz_game2');}catch(e){}};
+const cur=()=>S.pl[S.turn];
+const ownerOf=i=>S.own[i]===undefined?null:S.pl[S.own[i]];
+const mine=p=>Object.keys(S.own).filter(i=>S.own[i]===p.id).map(Number).sort((a,b)=>a-b);
+const hasSet=(p,g)=>GROUP_TILES(g).every(t=>S.own[t.i]===p.id);
+const alive=()=>S.pl.filter(p=>!p.out);
+const lvl=i=>S.lv[i]||0;
+const viewer=()=>{
+ if(NET.on&&NET.seat>=0)return S.pl[NET.seat];
+ const c=cur();return c&&!c.cpu&&!c.out?c:S.pl.find(p=>!p.cpu&&!p.out)||c;
+};
+const isRemote=p=>NET.on&&NET.host&&!p.cpu&&p.peer&&p.peer!==NET.peer;
+
+const FX={};
+function fx(k,...a){
+ if(NET.on&&NET.host)netSend('ev',{k,a});
+ return FX[k]?FX[k](...a):undefined;
+}
+FX.sfx=n=>playSfx(n);
+FX.log=t=>{if(!S)return;S.log.unshift(t);if(S.log.length>40)S.log.pop();renderLog();};
+FX.status=t=>{const e=$('#status');if(e)e.textContent=t;};
+FX.flash=i=>{const e=$(`.tile[data-i="${i}"]`);if(e){e.classList.remove('hl');void e.offsetWidth;e.classList.add('hl');}};
+FX.float=(pos,txt,cls)=>{
+ const b=$('#board');if(!b)return;const [r,c]=gridPos(pos),e=document.createElement('div');
+ e.className='fl '+cls;e.textContent=txt;e.style.left=axis(c)*100+'%';e.style.top=axis(r)*100+'%';b.appendChild(e);setTimeout(()=>e.remove(),1500);
+ for(let i=0;i<7;i++){const q=document.createElement('i');q.className='pt';q.textContent=cls==='p'?'🪙':'💨';
+  q.style.left=axis(c)*100+'%';q.style.top=axis(r)*100+'%';q.style.setProperty('--dx',(Math.random()*16-8)+'cqw');q.style.setProperty('--dy',(-(Math.random()*9+3))+'cqw');
+  b.appendChild(q);setTimeout(()=>q.remove(),1100);}
+ if(cls==='m')FX.shake();
+};
+FX.shake=()=>{const b=$('#board');if(b&&b.animate)b.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(-4px)'},{transform:'translateX(0)'}],{duration:320});};
+FX.conf=(n=70)=>{
+ const L=$('#layer'),cs=['#f2b632','#e0405a','#2fbf8f','#5b8cff','#fff'];
+ for(let i=0;i<n;i++){const e=document.createElement('i');e.className='cf';e.style.left=Math.random()*100+'vw';e.style.background=rnd(cs);
+  e.style.animationDuration=(2.5+Math.random()*3)+'s';e.style.animationDelay=Math.random()*1.2+'s';L.appendChild(e);setTimeout(()=>e.remove(),7000);}
+};
+FX.rx=(e,n)=>{
+ const b=$('#board');if(!b)return;const el=document.createElement('div');el.className='rx';el.innerHTML=`<span>${esc(e)}</span><small>${esc(n||'')}</small>`;
+ el.style.left=(15+Math.random()*70)+'%';b.appendChild(el);setTimeout(()=>el.remove(),2300);playSfx('pop');
+};
+
+function renderApp(){
+ $('#app').innerHTML='<div class="app"><div class="boardwrap"><div class="board" id="board"></div></div><div class="panel" id="panel"></div></div>';
+ buildBoard();renderPanel();updateTiles();placeTokens();
+ $('#board').addEventListener('click',e=>{const t=e.target.closest('.tile');if(t)showTile(+t.dataset.i);});
+}
+function buildBoard(){
+ let h='';
+ TILES.forEach(t=>{
+  const [r,c]=gridPos(t.i),corner=[0,10,20,30].includes(t.i);
+  h+=`<div class="tile ${corner?'corner':''} k-${t.t}" data-i="${t.i}" style="grid-row:${r};grid-column:${c}">`+
+   (t.t==='prop'?`<div class="band" style="--c:${GR[t.g].c}"></div><div class="fe">${t.fe}</div><div class="nm">${t.n}</div><div class="pr">${num(t.p)}</div>`
+   :`${t.fe?`<div class="fe">${t.fe}</div>`:''}<div class="ic">${t.ic}</div><div class="nm">${t.n}</div>${t.p?`<div class="pr">${num(t.p)}</div>`:''}`)+'</div>';
+ });
+ h+='<div class="center"><i class="sun"></i><i class="pyr" style="left:4%;width:34%;height:30%"></i><i class="pyr" style="left:30%;width:44%;height:40%"></i><i class="pyr" style="right:2%;width:28%;height:24%"></i><i class="nile"></i><i class="boat">⛵</i>'+
+  '<div class="logo">لولاميزا</div><div class="status" id="status"></div><div class="dice" id="dice"><div class="die"></div><div class="die"></div></div><div class="acts" id="acts"></div></div>';
+ $('#board').innerHTML=h;setDie(0,1);setDie(1,1);
+}
+function housesHTML(l){return l===5?'<i class="ht"></i>':'<i class="hs"></i>'.repeat(l);}
+function updateTiles(){
+ TILES.forEach(t=>{
+  const el=$(`.tile[data-i="${t.i}"]`);if(!el)return;
+  const o=ownerOf(t.i);
+  el.classList.toggle('owned',!!o);el.classList.toggle('mort',!!S.mort[t.i]);
+  if(o)el.style.setProperty('--oc',PCOL[o.id]);
+  if(t.t==='prop'){
+   const l=lvl(t.i),b=$('.band',el);
+   if(+b.dataset.l!==l){const up=l>(+b.dataset.l||0);b.dataset.l=l;b.innerHTML=housesHTML(l);if(up&&b.lastElementChild)b.lastElementChild.classList.add('new');}
+  }
+  const pr=$('.pr',el);if(pr&&['prop','st','ut'].includes(t.t))pr.textContent=o?o.tok.e:num(t.p);
+ });
+}
+function placeTokens(){
+ const b=$('#board');if(!b)return;
+ S.pl.forEach(p=>{
+  let el=$('#tk'+p.id,b);
+  if(p.out){if(el)el.remove();return;}
+  if(!el){el=document.createElement('div');el.id='tk'+p.id;el.className='tok';el.innerHTML='<span>'+p.tok.e+'</span>';b.appendChild(el);}
+  const [r,c]=gridPos(p.pos);
+  el.style.left=axis(c)*100+'%';el.style.top=axis(r)*100+'%';el.style.setProperty('--pc',PCOL[p.id]);
+  el.style.marginLeft=[-1.5,1.5,-1.5,1.5][p.id]+'cqw';el.style.marginTop=[-1.5,-1.5,1.5,1.5][p.id]+'cqw';
+  el.classList.toggle('on',p===cur());
+  if(el.dataset.pos!==String(p.pos)){el.dataset.pos=p.pos;const s=el.firstChild;if(s&&s.animate)s.animate([{transform:'translateY(0) scale(1)'},{transform:'translateY(-1.8cqw) scale(1.25)'},{transform:'translateY(0) scale(1)'}],{duration:150});}
+ });
+}
+function renderPanel(){
+ const el=$('#panel');if(!el||!S)return;
+ const v=viewer();
+ el.innerHTML='<div class="box"><h3 class="h">اللاعبين'+(NET.on?` · غرفة ${esc(NET.code)}${NET.host?' (مضيف نشط)':''}`:'')+'</h3><div class="pl">'+S.pl.map(p=>
+  `<div class="pc ${p===cur()&&!p.out?'me':''} ${p.out?'out':''}" style="--pcol:${PCOL[p.id]}"><span class="tk">${p.tok.e}</span><div><b>${esc(p.name)}${p.cpu?' 🤖':(NET.on?' 🌐':'')}${v&&p.id===v.id&&NET.on?' (أنت)':''}</b><small>${mine(p).length} ملك${p.jail?' · 🔒 في القسم':''}${p.free?' · 🎫 واسطة':''}${p.out?' · فلّس':''}</small></div><span class="cash">${money(p.cash)}</span></div>`).join('')+'</div></div>'+
+  '<div class="box"><div class="row"><button class="btn alt sm" id="bMan">🏗️ ممتلكاتي</button><button class="btn alt sm" id="bSet">⚙️ إعدادات</button><button class="btn alt sm" id="bHelp">❓ تلميحة</button></div>'+
+  '<div class="rxrow">'+['😂','👏','😡','💸','🔥','🙏'].map(e=>`<button class="rxb" data-e="${e}" aria-label="تفاعل ${e}">${e}</button>`).join('')+'</div>'+
+  `<p class="tip" id="tip" style="margin:8px 0 0">${esc(S.tip||TIPS[0])}</p></div>`+
+  '<div class="box"><h3 class="h">آخر الأحداث</h3><div class="log" id="log"></div></div>';
+ renderLog();
+ $('#bMan').onclick=()=>openMyManage();
+ $('#bSet').onclick=settings;
+ $('#bHelp').onclick=()=>{S.tip=rnd(TIPS);const t=$('#tip');if(t)t.textContent=S.tip;};
+ el.querySelectorAll('.rxb').forEach(b=>b.onclick=()=>{const nm=v?v.name:'';if(NET.on)netSend('rx',{e:b.dataset.e,n:nm});else FX.rx(b.dataset.e,nm);});
+}
+function renderLog(){const l=$('#log');if(l&&S)l.innerHTML=S.log.slice(0,25).map(x=>'<div>'+esc(x)+'</div>').join('');}
+function logm(t){fx('log',t);}
+function refresh(){updateTiles();placeTokens();renderPanel();scheduleSync();}
+const setStatus=t=>fx('status',t);
+function setActs(btns){
+ const box=$('#acts');
+ return new Promise(res=>{
+  box.innerHTML=btns.map((b,i)=>`<button class="btn ${b.c||''}" data-i="${i}">${b.t}</button>`).join('');
+  box.onclick=e=>{const b=e.target.closest('button');if(!b)return;box.innerHTML='';res(btns[+b.dataset.i].v);};
+ });
+}
+function remotePrompt(p,spec){
+ return new Promise(res=>{
+  const id=++NET.pid;
+  NET.pend.set(id,{peer:p.peer,res,btns:spec.btns,kind:spec.kind});
+  netSend('pr',Object.assign({id,to:p.peer},spec));
+ });
+}
+function chooseAsk(p,html,btns,deed){
+ if(isRemote(p))return remotePrompt(p,{kind:'ask',html,btns,deed});
+ return ask((deed!==undefined?deedHTML(TILES[deed]):'')+html,btns);
+}
+function chooseActs(p,btns){
+ if(isRemote(p))return remotePrompt(p,{kind:'acts',btns});
+ return setActs(btns);
+}
+
+const FACES={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+const dieHTML=n=>Array.from({length:9},(_,i)=>`<i class="pip ${FACES[n].includes(i)?'on':''}"></i>`).join('');
+function setDie(i,n){const d=$('#dice');if(d)d.children[i].innerHTML=dieHTML(n);}
+FX.dice=async(a,b)=>{
+ sfx.dice();const d=$('#dice');if(!d)return;[...d.children].forEach(x=>x.classList.add('roll'));
+ for(let k=0;k<10;k++){setDie(0,1+Math.random()*6|0);setDie(1,1+Math.random()*6|0);await sleep(75);}
+ setDie(0,a);setDie(1,b);[...d.children].forEach(x=>x.classList.remove('roll'));
+};
+async function rollAnim(){const a=1+Math.random()*6|0,b=1+Math.random()*6|0;await fx('dice',a,b);return [a,b];}
+
+function ask(html,btns){
+ return new Promise(res=>{
+  const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div class="sheet">${html}<div class="row" style="justify-content:center">${btns.map((b,i)=>`<button class="btn ${b.c||''}" data-v="${i}" ${b.d?'disabled':''}>${b.t}</button>`).join('')}</div></div>`;
+  $('#layer').appendChild(m);
+  m.addEventListener('click',e=>{const b=e.target.closest('button[data-v]');if(b&&!b.disabled){m.remove();res(btns[+b.dataset.v].v);}});
+ });
+}
+function deedHTML(t){
+ const R=(a,b)=>`<div class="rw"><span>${a}</span><b>${b}</b></div>`;
+ const fame=t.fe?`<div class="fame"><span>${t.fe}</span><div><b>مشهورة بـ ${t.fl}</b><small>${t.fj}</small></div></div>`:'';
+ if(t.t==='prop'){const g=GR[t.g],r=t.rent;
+  return `<div class="deed" style="--c:${g.c};--tc:${g.tc}"><div class="top">${t.n}<small>${t.sub} · المجموعة ${g.n}</small></div>${fame}`+
+   R('الإيجار',money(r[0]))+R('ومعاك المجموعة كلها',money(r[0]*2))+R('🏠 بيت واحد',money(r[1]))+R('🏠🏠 بيتين',money(r[2]))+R('🏠🏠🏠 3 بيوت',money(r[3]))+R('🏠🏠🏠🏠 4 بيوت',money(r[4]))+R('🏨 فندق',money(r[5]))+R('تكلفة البيت أو الفندق',money(t.hc))+R('قيمة الرهن',money(t.p/2))+'</div>';}
+ if(t.t==='st')return `<div class="deed" style="--c:#2a4a70"><div class="top">${t.ic} ${t.n}</div>${fame}`+R('لو معاه محطة واحدة',money(25))+R('محطتين',money(50))+R('3 محطات',money(100))+R('4 محطات',money(200))+R('قيمة الرهن',money(100))+'</div>';
+ if(t.t==='ut')return `<div class="deed" style="--c:#2a4a70"><div class="top">${t.ic} ${t.n}</div>${fame}`+R('لو معاه واحدة','4 × النرد')+R('لو معاه الاتنين','10 × النرد')+R('قيمة الرهن',money(75))+'</div>';
+ const d={go:'كل ما تعدي من هنا تقبض '+money(SALARY),tax:'ادفع '+money(t.p)+' للحكومة (والفلوس تروح لقهوة البلد).',chance:'اسحب كارت حظ.. يا تكسب يا تخسر! وهيتقرا بصوت عالي.',chest:'اسحب كارت من الجمعية.',jail:'لو جيت هنا بالنرد يبقى زيارة بس.',ahwa:'استريح، واكسب كل فلوس الضرايب والغرامات اللي اتجمعت (دلوقتي '+money(S.pool||0)+').',gojail:'تروح القسم على طول وتتعرض على القاضي بدون ما تقبض مرتب!'}[t.t]||'';
+ return `<div class="deed" style="--c:#2a4a70"><div class="top">${t.ic} ${t.n}</div><div class="rw" style="display:block;padding:12px 14px;line-height:1.7">${d}</div></div>`;
+}
+async function showTile(i){
+ const t=TILES[i],o=ownerOf(i);let extra='';
+ if(o)extra=`<p>المالك: ${o.tok.e} <b>${esc(o.name)}</b>${S.mort[i]?' (مرهونة)':''}${lvl(i)?' · '+(lvl(i)===5?'🏨 فندق':'🏠 × '+lvl(i)):''}</p>`;
+ await ask(deedHTML(t)+extra,[{t:'تمام',v:1}]);
+}
+
+FX.card=(type,text,who)=>new Promise(res=>{
+ playSfx('card');
+ const html=`<div class="flip"><div class="card ${type==='ch'?'ch':'cc'}"><div><span class="ct">${type==='ch'?'🎲 حظك':'👵 جمعية'}${who?' · '+esc(who):''}</span>${esc(text)}</div></div></div>`;
+ const m=document.createElement('div');m.className='modal';
+ m.innerHTML=`<div class="sheet">${html}<p class="tip" style="text-align:center">اضغط للمتابعة</p></div>`;$('#layer').appendChild(m);
+ let d=false;const end=()=>{if(d)return;d=true;stopAudio();m.remove();res();};
+ m.onclick=end;
+ say(text,VOICES.card).then(()=>setTimeout(end,1100));
+ setTimeout(end,Math.max(6500,text.length*135));
+});
+
+const A=(e,l,t,s,cls='',d=0,st='')=>`<span class="actor ${cls}" style="left:${l}%;top:${t}%;font-size:${s}px;animation-delay:${d}s;${st}">${e}</span>`;
+const rain=(items,n)=>Array.from({length:n},(_,i)=>A(rnd(items),Math.random()*90,0,34+Math.random()*26,'a-rain',Math.random()*1.7)).join('');
+const stars=()=>Array.from({length:14},()=>A('✨',Math.random()*92,Math.random()*30,14+Math.random()*14,'a-blink',Math.random())).join('');
+const SCENES={
+ jail:()=>A('🏢',55,2,150,'a-pop')+A('🚓',4,48,110,'a-drive')+A('🚨',28,22,52,'a-blink')+A('👮',72,42,92,'a-pop',.7)+A('⛓️',44,62,54,'a-sway',1),
+ court:a=>stars()+A('🏛️',34,0,110,'a-pop')+A('👨‍⚖️',42,28,120,'a-bounce',.3)+A('🔨',63,34,66,'a-gavel',.8)+A(a.d||'😰',10,52,100,'a-shake',.6)+A('👥',70,56,84,'a-sway',.5)+A('📜',26,56,56,'a-float',.5),
+ salary:()=>rain(['💸','💵','💰','🪙'],16)+A('🧑‍💼',42,44,110,'a-bounce'),
+ rent:a=>A(a.p||'😭',8,40,104,'a-shake')+A(a.o||'🤑',74,40,104,'a-bounce')+A('💸',36,48,70,'a-fly')+A('💸',44,38,60,'a-fly',.4),
+ tax:()=>A('🧾',34,6,150,'a-pop')+A('😵',66,42,100,'a-shake',.4)+A('💸',14,50,70,'a-float')+A('🏛️',6,8,70,'a-pop',.2),
+ buy:a=>A(a.f||'🏠',30,8,150,'a-pop')+A('🔑',72,26,90,'a-sway',.4)+A('🏠',8,48,80,'a-rise',.3)+`<span class="actor a-stamp" style="left:20%;top:64%;font-family:var(--f-display);font-size:44px;color:#6dffb8;border:6px solid #6dffb8;padding:0 14px;border-radius:12px;background:#0a2a1d">تم الشراء</span>`,
+ house:()=>A('🚧',6,58,70,'a-sway')+A('👷',64,34,100,'a-bounce')+A('🏗️',28,6,140,'a-sway')+A('🏠',44,48,112,'a-rise',1)+A('🧱',82,64,50,'a-bounce',.3),
+ hotel:()=>A('🏨',30,14,176,'a-rise')+[0,1,2,3,4].map(i=>A('⭐',22+i*13,2,34,'a-pop',.8+i*.15)).join('')+A('🎆',4,18,80,'a-blink')+A('🎆',82,18,80,'a-blink',.2)+A('🧑‍💼',76,56,84,'a-bounce',.5)+A('🎀',8,52,70,'a-sway',.6),
+ ahwa:()=>A('☕',28,38,110,'a-bounce')+A('💨',54,4,80,'a-float')+A('👴',66,38,112,'a-sway')+A('🫖',8,44,90,'a-pop'),
+ broke:()=>rain(['💸','🍂'],8)+A('💀',34,16,150,'a-pop')+A('😭',70,52,92,'a-shake')+A('🌵',6,52,70,'a-sway'),
+ win:()=>A('🏆',34,10,160,'a-bounce')+A('👑',46,0,70,'a-float')+A('🎺',6,48,82,'a-sway')+A('🥁',80,50,82,'a-bounce')+A('🎉',70,12,86,'a-bounce',.3),
+ free:()=>A('🎫',34,12,140,'a-pop')+A('😎',68,44,100,'a-bounce')+A('🔓',8,46,84,'a-sway'),
+ trade:()=>A('🤝',34,16,150,'a-bounce')+A('💰',8,40,90,'a-fly')+A('🏠',78,40,90,'a-fly',.4)
+};
+FX.cut=o=>new Promise(res=>{
+ if(!SET.cuts&&!o.force){setTimeout(res,350);return;}
+ const el=document.createElement('div');el.className='cut';el.style.setProperty('--m1',o.m1||'#2a4a80');el.style.setProperty('--m2',o.m2||'#0b1426');
+ const lines=o.lines||[{t:o.text||''}];
+ el.innerHTML=`<div class="stage">${SCENES[o.scene]?SCENES[o.scene](o.a||{}):''}</div><h2>${esc(o.title||'')}</h2><p id="cutp" aria-live="polite"></p><div class="bar"><i id="cutb"></i></div><small>اضغط للتخطي</small>`;
+ $('#layer').appendChild(el);
+ let done=false,skip;const sk=new Promise(r=>{skip=r;});
+ const end=()=>{if(done)return;done=true;stopAudio();el.remove();res();};
+ el.addEventListener('click',()=>{skip();end();});
+ (async()=>{
+  const lineDur=l=>Math.max(o.ms||0,Math.max(3000,l.t.length*105)+(l.v?1200:0));
+  const total=lines.reduce((s,l)=>s+lineDur(l),0);
+  let used=0;
+  for(const l of lines){
+   if(done)return;
+   const p=$('#cutp',el);if(!p)return;
+   p.textContent='';p.style.animation='none';void p.offsetWidth;p.style.animation='';
+   p.textContent=l.t;
+   const need=lineDur(l);
+   if(l.sound)playSfx(l.sound);
+   const b=$('#cutb',el);
+   if(b){
+    b.style.transition='none';
+    b.style.width=(used/Math.max(1,total)*100)+'%';
+    void b.offsetWidth;
+    b.style.transition=`width ${need}ms linear`;
+    b.style.width=((used+need)/Math.max(1,total)*100)+'%';
+   }
+   used+=need;
+   if(l.v){
+    await Promise.race([
+     say(l.t,VOICES[l.v]||VOICES.host).then(()=>sleep(650)),
+     sk
+    ]);
+   }else{
+    await Promise.race([sleep(need),sk]);
+   }
+  }
+  await sleep(350);end();
+ })();
+});
+function cut(scene,o={}){
+ let lines=o.lines;
+ if(!lines&&o.text)lines=[{t:o.text}];
+ return fx('cut',Object.assign({scene},o,{lines,text:undefined}));
+}
+
+let syncT=null;
+function snapshot(){
+ return {
+  pl:S.pl.map(p=>({id:p.id,name:p.name,cpu:p.cpu,cash:p.cash,pos:p.pos,jail:p.jail,free:p.free,out:p.out,peer:p.peer||''})),
+  own:S.own,lv:S.lv,mort:S.mort,turn:S.turn,pool:S.pool,over:S.over,log:S.log,again:S.again,dbl:S.dbl,last:S.last
+ };
+}
+function scheduleSync(){
+ if(!(NET.on&&NET.host)||syncT||!S)return;
+ syncT=setTimeout(()=>{syncT=null;if(S&&NET.on&&NET.host)netSend('st',snapshot());},90);
+}
+function applySnap(d){
+ if(!d||!d.pl)return;
+ const first=!S;
+ if(first)S={log:[],tip:TIPS[0],deck:{ch:shuffle(CHANCE.map((_,i)=>i)),cc:shuffle(CHEST.map((_,i)=>i))},mort:{},lv:{},own:{}};
+ S.pl=d.pl.map(p=>Object.assign({},p,{tok:TOKENS[p.id]||TOKENS[0]}));
+ S.own=d.own||{};S.lv=d.lv||{};S.mort=d.mort||{};S.turn=d.turn||0;S.pool=d.pool||0;S.over=!!d.over;
+ if(Array.isArray(d.log))S.log=d.log.slice(0,40);
+ if(typeof d.again==='boolean')S.again=d.again;
+ if(typeof d.dbl==='number')S.dbl=d.dbl;
+ if(typeof d.last==='number')S.last=d.last;
+ NET.seat=S.pl.findIndex(p=>p.peer===NET.peer);
+ if(first)renderApp();else{updateTiles();placeTokens();renderPanel();renderLog();}
+ if(MAN&&MAN.draw)MAN.draw();
+}
+
+function gain(p,n,why){p.cash+=n;fx('float',p.pos,'+'+num(n),'p');fx('sfx','coin');if(why)logm(`${p.tok.e} ${p.name}: ${why} (+${num(n)})`);refresh();}
+async function charge(p,amt,cred,why){
+ if(amt<=0)return true;
+ if(p.cash<amt)await raiseCash(p,amt,cred);
+ if(p.out)return false;
+ p.cash-=amt;
+ if(cred==='pool')S.pool=(S.pool||0)+amt;else if(cred)cred.cash+=amt;
+ fx('float',p.pos,'-'+num(amt),'m');fx('sfx','pay');
+ logm(`${p.tok.e} ${p.name} دفع ${money(amt)}${why?' ('+why+')':''}`);refresh();return true;
+}
+async function raiseCash(p,amt,cred){
+ if(p.cpu){aiLiquidate(p,amt);if(p.cash<amt)await bankrupt(p,cred);return;}
+ if(assets(p)<amt){await bankrupt(p,cred);return;}
+ while(p.cash<amt&&!p.out){
+  const r=await manage(p,amt);
+  if(r==='bankrupt'){await bankrupt(p,cred);return;}
+ }
+}
+async function bankrupt(p,cred){
+ const cp=cred&&cred!=='pool'?cred:null;
+ fx('sfx','sad');
+ await cut('broke',{title:`${p.name} فلّس!`,lines:[{t:rnd(J.broke)}],m1:'#5a1a2a',m2:'#12060a'});
+ for(const i of mine(p)){S.lv[i]=0;if(cp&&!cp.out){S.own[i]=cp.id;}else{delete S.own[i];delete S.mort[i];}}
+ if(cp&&!cp.out)cp.cash+=Math.max(0,p.cash);
+ p.cash=0;p.out=true;p.free=0;
+ logm(`💀 ${p.tok.e} ${p.name} فلّس وخرج من اللعبة`);
+ refresh();await checkWin();
+}
+async function checkWin(){
+ if(S.over||alive().length>1)return;
+ S.over=true;clearGame();scheduleSync();
+ await fx('over',alive()[0].name,alive()[0].tok.e,alive()[0].cash,mine(alive()[0]).length);
+ goMenu();
+}
+FX.over=async(name,e,cash,cnt)=>{
+ FX.conf(130);playSfx('fan');
+ await FX.cut({scene:'win',title:`${name} كسب! 🏆`,lines:[{t:rnd(J.win),v:'host'}],m1:'#6a5a1d',m2:'#1a1405',force:true,ms:3500});
+ await ask(`<h2>🏆 الفايز: ${e} ${esc(name)}</h2><p>خلّص اللعبة برصيد ${money(cash)} و ${num(cnt)} ملك. ألف مبروك!</p>`,[{t:'القائمة الرئيسية',v:1}]);
+};
+function rentFor(t,dice,o){
+ if(t.t==='prop'){const l=lvl(t.i);let r=t.rent[l];if(l===0&&hasSet(o,t.g))r*=2;return r;}
+ if(t.t==='st'){const n=TILES.filter(x=>x.t==='st'&&S.own[x.i]===o.id&&!S.mort[x.i]).length;return 25*Math.pow(2,Math.max(1,n)-1);}
+ const n=TILES.filter(x=>x.t==='ut'&&S.own[x.i]===o.id&&!S.mort[x.i]).length;return dice*(n>=2?10:4);
+}
+async function payRent(p,o,r,t){
+ await cut('rent',{a:{p:p.tok.e,o:o.tok.e},title:`إيجار ${money(r)}`,lines:[{t:`${p.name} بيدفع لـ ${o.name} في ${t.n}.`},{t:rnd(J.rent)}],m1:'#6a2a2a'});
+ await charge(p,r,o,'إيجار '+t.n);
+}
+
+async function stepTo(p,pos,collect){p.pos=pos;if(pos===0&&collect)await passGo(p);refresh();fx('sfx','hop');await sleep(150);}
+async function moveBy(p,n){for(let k=0;k<n;k++)await stepTo(p,(p.pos+1)%40,true);}
+async function moveTo(p,to){while(p.pos!==to)await stepTo(p,(p.pos+1)%40,true);}
+async function moveBack(p,n){for(let k=0;k<n;k++)await stepTo(p,(p.pos+39)%40,false);}
+async function passGo(p){gain(p,SALARY,'مرتب');await cut('salary',{title:'قبضت المرتب! +'+money(SALARY),lines:[{t:rnd(J.salary)}],m1:'#1d6a3a',m2:'#06180e'});}
+async function sendJail(p,charge_){
+ const ch=charge_||rnd(CHARGES);
+ fx('sfx','siren');logm(`🚓 ${p.tok.e} ${p.name} اتقبض عليه!`);
+ await cut('jail',{title:'اتقبض عليك!',lines:[{t:`البوليس قبض على ${p.name}.. والتهمة جاهزة.`}],m1:'#2a2a6a',m2:'#060614'});
+ const caseNo=num(100+Math.floor(Math.random()*899));
+ await cut('court',{a:{d:p.tok.e},title:'جلسة المحكمة ⚖️',m1:'#4a3a1d',m2:'#120c04',lines:[
+  {t:`محكمة لولاميزا الابتدائية.. القضية رقم ${caseNo} لسنة ٢٠٢٦.`,v:'judge',sound:'gavel'},
+  {t:`المتهم ${p.name}، متهم بـ ${ch}.`,v:'judge'},
+  {t:rnd(DEFENSE),v:'judge'},
+  {t:rnd(VERDICT).replace('{n}','3'),v:'judge',sound:'gavel'}]});
+ p.pos=10;p.jail=3;refresh();
+}
+
+async function offerBuy(p,t){
+ let yes;
+ if(p.cpu){yes=aiBuy(p,t);await sleep(600);}
+ else{
+  const can=p.cash>=t.p;
+  yes=await chooseAsk(p,`<p>${can?'عايز تشتري':'معاكش فلوس تكفي لشراء'} <b>${t.n}</b> بـ ${money(t.p)}؟ رصيدك ${money(p.cash)}.</p>`,[{t:'🛒 اشتري',c:'good',v:true,d:!can},{t:'لأ شكرًا',c:'alt',v:false}],t.i);
+ }
+ if(!yes){logm(`${p.tok.e} ${p.name} عدّى على ${t.n} من غير شراء`);return;}
+ p.cash-=t.p;S.own[t.i]=p.id;refresh();fx('flash',t.i);fx('sfx','buy');
+ logm(`🏷️ ${p.tok.e} ${p.name} اشترى ${t.n} بـ ${money(t.p)}`);
+ await cut('buy',{a:{f:t.fe},title:`${t.n} بقت بتاعتك!`,lines:[{t:`${t.fe} ${t.n}: مشهورة بـ ${t.fl}.`},{t:t.fj}],m1:'#1d6a4a'});
+ if(t.g&&hasSet(p,t.g)){
+  logm(`🎉 ${p.name} كمّل المجموعة ${GR[t.g].n}`);fx('sfx','fan');fx('conf',40);
+  await cut('house',{title:'كمّلت المجموعة!',lines:[{t:`دلوقتي تقدر تبني بيوت وفنادق في المجموعة ${GR[t.g].n}.`},{t:'والإيجار على أي حد هينزل عندك بقى تقيل!'}],m1:'#6a5a1d'});
+ }
+}
+async function land(p,dice,opt={}){
+ const t=TILES[p.pos];
+ if(['prop','st','ut'].includes(t.t)){
+  const o=ownerOf(t.i);
+  if(!o)await offerBuy(p,t);
+  else if(o!==p){
+   if(S.mort[t.i]){logm(`${t.n} مرهونة.. نجوت من الإيجار!`);return;}
+   let r=rentFor(t,dice,o);
+   if(opt.mult&&t.t==='st')r*=2;
+   if(opt.mult&&t.t==='ut')r=dice*10;
+   await payRent(p,o,r,t);
+  }
+  return;
+ }
+ if(t.t==='tax'){await cut('tax',{title:`${t.n}: ${money(t.p)}`,lines:[{t:rnd(J.tax)}],m1:'#6a4a1d'});await charge(p,t.p,'pool',t.n);}
+ else if(t.t==='chance')await drawCard(p,'ch');
+ else if(t.t==='chest')await drawCard(p,'cc');
+ else if(t.t==='gojail')await sendJail(p);
+ else if(t.t==='ahwa'){
+  const w=S.pool||0;S.pool=0;
+  await cut('ahwa',{title:'قهوة البلد ☕',lines:[{t:rnd(J.ahwa)},...(w?[{t:`ولقيت ${money(w)} تحت الصينية!`}]:[])],m1:'#6a4a2a'});
+  if(w)gain(p,w,'فلوس قهوة البلد');
+ }
+}
+
+async function drawCard(p,type){
+ const deck=S.deck[type],src=type==='ch'?CHANCE:CHEST,idx=deck.shift();deck.push(idx);const c=src[idx];
+ await fx('card',type,c.t,p.name);
+ logm(`${p.tok.e} ${p.name} سحب: ${c.t}`);
+ await applyCard(p,c);
+}
+async function applyCard(p,c){
+ const last=S.last||7;
+ switch(c.k){
+  case 'money':if(c.v>0)gain(p,c.v);else await charge(p,-c.v,'pool','كارت');break;
+  case 'goto':await moveTo(p,c.to);await land(p,last);break;
+  case 'back':await moveBack(p,c.v);await land(p,last);break;
+  case 'jail':await sendJail(p);break;
+  case 'free':
+   if(p.free>=1)gain(p,50,'معاك كارت واسطة أصلًا فخد 50 ج');
+   else{p.free=1;fx('sfx','fan');await cut('free',{title:'كارت واسطة 🎫',lines:[{t:'احتفظ بيه لحد ما تتزنق في القسم.'}],m1:'#1d6a6a'});refresh();}
+   break;
+  case 'each':
+   for(const o of alive()){if(o===p||p.out)continue;if(c.v>0)await charge(o,c.v,p,'كارت');else await charge(p,-c.v,o,'كارت');}
+   break;
+  case 'repair':{
+   let h=0,t=0;for(const i of mine(p)){const l=lvl(i);if(l===5)t++;else h+=l;}
+   const cost=h*c.h+t*c.hot;
+   if(cost>0)await charge(p,cost,'pool','صيانة');else logm('معندكش بيوت.. نجوت من الصيانة!');
+   break;}
+  case 'near':{
+   let to=p.pos;do{to=(to+1)%40;}while(TILES[to].t!==c.w);
+   await moveTo(p,to);await land(p,last,{mult:c.w==='st'?2:10});break;}
+ }
+}
+
+function canBuild(p,t){
+ if(!t||t.t!=='prop'||S.own[t.i]!==p.id||!hasSet(p,t.g))return false;
+ const g=GROUP_TILES(t.g);if(g.some(x=>S.mort[x.i]))return false;
+ return lvl(t.i)<5&&lvl(t.i)<=Math.min(...g.map(x=>lvl(x.i)))&&p.cash>=t.hc;
+}
+function canSell(p,t){
+ if(!t||t.t!=='prop'||S.own[t.i]!==p.id||lvl(t.i)===0)return false;
+ return lvl(t.i)>=Math.max(...GROUP_TILES(t.g).map(x=>lvl(x.i)));
+}
+function canMort(p,t){
+ if(!t||S.own[t.i]!==p.id||S.mort[t.i])return false;
+ if(t.g&&GROUP_TILES(t.g).some(x=>lvl(x.i)>0))return false;return true;
+}
+async function doBuild(p,t){
+ p.cash-=t.hc;S.lv[t.i]=lvl(t.i)+1;fx('sfx','build');refresh();fx('flash',t.i);
+ const hotel=S.lv[t.i]===5;
+ logm(`${hotel?'🏨':'🏠'} ${p.tok.e} ${p.name} ${hotel?'بنى فندق':'بنى بيت'} في ${t.n}`);
+ if(hotel){fx('sfx','fan');fx('conf',50);}
+ await cut(hotel?'hotel':'house',{title:hotel?`فندق جديد في ${t.n}!`:`بيت جديد في ${t.n}`,lines:[{t:`${t.fe} ${t.n} (${t.fl})`},{t:rnd(hotel?J.hotel:J.build)}],m1:hotel?'#6a5a1d':'#2a5a4a'});
+}
+function doSell(p,t){p.cash+=t.hc/2;S.lv[t.i]=lvl(t.i)-1;fx('sfx','coin');logm(`${p.name} باع بيت في ${t.n} بـ ${money(t.hc/2)}`);refresh();}
+function doMort(p,t){S.mort[t.i]=1;p.cash+=t.p/2;fx('sfx','coin');logm(`${p.name} رهن ${t.n} بـ ${money(t.p/2)}`);refresh();}
+function doUnmort(p,t){const c=Math.ceil(t.p/2*1.1);if(p.cash<c)return;p.cash-=c;delete S.mort[t.i];fx('sfx','pay');logm(`${p.name} فك رهن ${t.n} بـ ${money(c)}`);refresh();}
+function assets(p){return mine(p).reduce((s,i)=>{const t=TILES[i];return s+(S.mort[i]?0:t.p/2)+(t.hc?lvl(i)*t.hc/2:0);},p.cash);}
+
+let MAN=null;
+function manage(p,need=0){
+ if(isRemote(p))return remotePrompt(p,{kind:'man',need}).then(v=>v||'ok');
+ return manageUI(p,need,false);
+}
+function openMyManage(){
+ const v=viewer();if(!v||v.out)return;
+ if(NET.on&&!NET.host)manageUI(v,0,true);else manage(v);
+}
+function manageUI(p,need,remote){
+ return new Promise(res=>{
+  if(MAN&&MAN.el)MAN.el.remove();
+  const m=document.createElement('div');m.className='modal';$('#layer').appendChild(m);
+  const draw=()=>{
+   const my=mine(p),groups={};my.forEach(i=>{const t=TILES[i],k=t.g||t.t;(groups[k]=groups[k]||[]).push(t);});
+   let h=`<h2>🏗️ ممتلكات ${esc(p.name)}</h2><p>رصيدك: <b>${money(p.cash)}</b>${need?` · مطلوب منك: <b style="color:var(--red)">${money(need)}</b>`:''}</p>`;
+   if(!my.length)h+='<p>معندكش أي ممتلكات لسه.</p>';
+   for(const k in groups){
+    const g=GR[k],hd=g?`style="--c:${g.c};--tc:${g.tc}"`:`style="--c:#2a4a70"`;
+    h+=`<div class="grp" ${hd}><div class="gh">${g?'المجموعة '+g.n:'مواصلات وخدمات'}</div>`;
+    groups[k].forEach(t=>{
+     const l=lvl(t.i);
+     h+=`<div class="prow"><span class="n">${t.fe||t.ic} ${t.n}${S.mort[t.i]?' 🔒':''}</span><span class="lv">${l===5?'🏨':'🏠'.repeat(l)}</span><span class="row">`+
+      (t.t==='prop'?`<button class="btn sm good" data-a="b" data-i="${t.i}" ${canBuild(p,t)?'':'disabled'}>بناء ${num(t.hc)}</button><button class="btn sm alt" data-a="s" data-i="${t.i}" ${canSell(p,t)?'':'disabled'}>بيع</button>`:'')+
+      (S.mort[t.i]?`<button class="btn sm" data-a="u" data-i="${t.i}" ${p.cash>=Math.ceil(t.p/2*1.1)?'':'disabled'}>فك رهن</button>`:`<button class="btn sm alt" data-a="m" data-i="${t.i}" ${canMort(p,t)?'':'disabled'}>رهن +${num(t.p/2)}</button>`)+
+      '</span></div>';
+    });
+    h+='</div>';
+   }
+   h+=`<p class="tip">البناء لازم تكمل المجموعة كلها وبالتساوي. فك الرهن عليه 10% فايدة.</p><div class="row" style="justify-content:center">`+
+    (need?`<button class="btn bad" data-a="x">أعلن إفلاسي 💀</button>`:'')+
+    (!need?`<button class="btn alt" data-a="t">🤝 تجارة</button>`:'')+
+    `<button class="btn" data-a="c" ${need&&p.cash<need?'disabled':''}>${need?'ادفع':'تمام'}</button></div>`;
+   m.innerHTML=`<div class="sheet">${h}</div>`;
+  };
+  MAN={draw,el:m};draw();
+  m.addEventListener('click',async e=>{
+   const b=e.target.closest('button[data-a]');if(!b||b.disabled)return;
+   const a=b.dataset.a,i=+b.dataset.i,t=TILES[i];
+   if(a==='x'){m.remove();MAN=null;res('bankrupt');return;}
+   if(a==='c'){m.remove();MAN=null;res('ok');return;}
+   if(remote){netSend('cm',{a,i:isNaN(i)?0:i});return;}
+   if(a==='b'&&canBuild(p,t)){b.disabled=true;await doBuild(p,t);}else if(a==='s'&&canSell(p,t))doSell(p,t);else if(a==='m'&&canMort(p,t))doMort(p,t);else if(a==='u')doUnmort(p,t);
+   else if(a==='t'){await tradeUI(p);}
+   if(MAN&&MAN.el===m)draw();
+  });
+ });
+}
+async function onCmd(m){
+ const d=m.data||{};if(!S||S.over)return;
+ const p=S.pl.find(x=>x.peer===m.peer&&!x.cpu);if(!p||p.out)return;
+ const t=TILES[d.i];
+ if(d.a==='b'&&canBuild(p,t))await doBuild(p,t);
+ else if(d.a==='s'&&canSell(p,t))doSell(p,t);
+ else if(d.a==='m'&&canMort(p,t))doMort(p,t);
+ else if(d.a==='u'&&t&&S.own[t.i]===p.id&&S.mort[t.i])doUnmort(p,t);
+ else if(d.a==='t'&&!p.trading){p.trading=true;try{await tradeUI(p);}finally{p.trading=false;}}
+}
+
+async function tradeUI(p){
+ const others=alive().filter(o=>o!==p);
+ const who_=await chooseAsk(p,'<h2>🤝 تجارة مع مين؟</h2>',others.map(o=>({t:`${o.tok.e} ${o.name}`,v:o.id})).concat([{t:'إلغاء',c:'alt',v:-1}]));
+ if(who_===-1||who_===undefined)return;const who=S.pl[who_];
+ const their=mine(who).filter(i=>lvl(i)===0&&(!TILES[i].g||GROUP_TILES(TILES[i].g).every(x=>lvl(x.i)===0)));
+ if(!their.length){await chooseAsk(p,`<p>${esc(who.name)} معندوش حاجة تتباع دلوقتي.</p>`,[{t:'تمام',v:1}]);return;}
+ const pick=await chooseAsk(p,`<h2>عايز تشتري إيه من ${esc(who.name)}؟</h2>`,their.map(i=>({t:`${TILES[i].fe||TILES[i].ic} ${TILES[i].n} (${num(TILES[i].p)})`,v:i})).concat([{t:'إلغاء',c:'alt',v:-1}]));
+ if(pick===-1||pick===undefined)return;
+ const t=TILES[pick],amts=[Math.round(t.p*.8),t.p,Math.round(t.p*1.3),Math.round(t.p*1.7),Math.round(t.p*2.5)].filter(a=>a<=p.cash);
+ if(!amts.length){await chooseAsk(p,'<p>رصيدك مش مكفي لأي عرض.</p>',[{t:'تمام',v:1}]);return;}
+ const amt=await chooseAsk(p,`<h2>كام تعرض على ${esc(t.n)}؟</h2>`,amts.map(a=>({t:money(a),v:a})).concat([{t:'إلغاء',c:'alt',v:-1}]));
+ if(amt===-1||amt===undefined)return;
+ let ok;
+ if(who.cpu){await sleep(500);ok=aiTradeOk(who,p,t,amt);}
+ else ok=await chooseAsk(who,`<h2>عرض لـ ${esc(who.name)}</h2><p>${esc(p.name)} عايز يشتري ${esc(t.n)} بـ ${money(amt)}. توافق؟</p>`,[{t:'أوافق',c:'good',v:true},{t:'ارفض',c:'bad',v:false}]);
+ if(ok){
+  p.cash-=amt;who.cash+=amt;S.own[pick]=p.id;fx('sfx','buy');logm(`🤝 ${p.name} اشترى ${t.n} من ${who.name} بـ ${money(amt)}`);refresh();fx('flash',pick);
+  await cut('trade',{title:'الصفقة تمت 🤝',lines:[{t:`${t.n} بقت عند ${p.name} بـ ${money(amt)}.`},{t:`${who.name} قال: "مش هقول إني خسرت.. بس هقول إني اتأثرت."`}],m1:'#2a5a6a'});
+ }else await chooseAsk(p,`<h2>اترفضت ❌</h2><p>${esc(who.name)} قال: "مش بايع ولا بكام!"</p>`,[{t:'تمام',v:1}]);
+}
+
+function aiBuy(p,t){
+ if(p.cash<t.p)return false;
+ const left=p.cash-t.p;
+ if(t.g){
+  const own=GROUP_TILES(t.g).filter(x=>S.own[x.i]===p.id).length;
+  if(own===GROUP_TILES(t.g).length-1)return left>=0;
+  return left>=120;
+ }
+ return left>=180;
+}
+function aiTradeOk(who,buyer,t,amt){
+ let need=t.p*1.4;
+ if(t.g){const g=GROUP_TILES(t.g);if(g.filter(x=>S.own[x.i]===who.id).length>1)need=t.p*2.5;
+  if(g.filter(x=>S.own[x.i]===buyer.id).length===g.length-1)need=t.p*3.5;}
+ return amt>=need;
+}
+async function aiManage(p){
+ const sets=Object.keys(GR).filter(g=>hasSet(p,g));
+ for(const g of sets){
+  let guard=0;
+  while(guard++<12){
+   const ts=GROUP_TILES(g).filter(t=>canBuild(p,t)&&p.cash-t.hc>=150);
+   if(!ts.length)break;await doBuild(p,ts.sort((a,b)=>lvl(a.i)-lvl(b.i))[0]);
+  }
+ }
+ for(const i of mine(p)){const t=TILES[i];if(S.mort[i]&&p.cash>Math.ceil(t.p*.55)+400)doUnmort(p,t);}
+}
+function aiLiquidate(p,need){
+ let g=0;
+ while(p.cash<need&&g++<60){
+  const s=mine(p).map(i=>TILES[i]).filter(t=>canSell(p,t))[0];
+  if(s){doSell(p,s);continue;}
+  const m=mine(p).map(i=>TILES[i]).filter(t=>canMort(p,t)).sort((a,b)=>a.p-b.p)[0];
+  if(m){doMort(p,m);continue;}break;
+ }
+}
+
+let RUN=0;
+async function turnLoop(){
+ if(NET.on&&!NET.host)return;
+ const my=RUN;
+ while(my===RUN&&S&&!S.over){
+  if(NET.on&&!NET.host)return;
+  const p=cur();
+  if(!p)break;
+  if(p.out){S.turn=(S.turn+1)%S.pl.length;continue;}
+  save();refresh();
+  await playTurn(p,my);
+  if(my!==RUN||!S||S.over)return;
+  if(!S.again)S.turn=(S.turn+1)%S.pl.length;
+ }
+}
+async function playTurn(p,my){
+ S.again=false;
+ setStatus(p.cpu?`دور ${p.name} 🤖`:`دور ${p.name}`);
+ if(p.cpu){await sleep(800);await aiManage(p);}
+ let dbl=S.dbl||0;S.dbl=0;
+ if(p.jail){
+  let act;
+  if(p.cpu){act=p.free?'card':p.cash>350?'pay':'roll';await sleep(600);}
+  else act=await chooseActs(p,[
+   {t:`🎲 جرّب تتخلص (${p.jail} محاولات)`,v:'roll'},
+   {t:`💵 ادفع ${money(JAIL_FINE)}`,c:'alt',v:'pay'},
+   ...(p.free?[{t:'🎫 كارت الواسطة',c:'good',v:'card'}]:[]),
+   {t:'🏗️ إدارة',c:'alt',v:'man'}]);
+  if(act==='man'){await manage(p);return playTurn(p,my);}
+  if(act==='card'){p.free=0;p.jail=0;logm(`🎫 ${p.name} استخدم كارت الواسطة`);await cut('free',{title:'واسطة!',lines:[{t:'"أنا أعرف واحد هنا" — وخرج على طول.'}],m1:'#1d6a6a'});}
+  else if(act==='pay'){if(await charge(p,JAIL_FINE,'pool','كفالة'))p.jail=0;else return;}
+  else{
+   const [a,b]=await rollAnim();S.last=a+b;
+   if(a===b){p.jail=0;logm(`🎲 ${p.name} طلع من القسم بدبلة!`);await moveBy(p,a+b);await land(p,a+b);return;}
+   p.jail--;
+   if(p.jail<=0){await charge(p,JAIL_FINE,'pool','كفالة إجبارية');p.jail=0;if(p.out)return;await moveBy(p,a+b);await land(p,a+b);return;}
+   logm(`${p.name} لسه في القسم`);setStatus('لسه في القسم.. 😴');await sleep(900);return;
+  }
+ }
+ if(!p.cpu){
+  const r=await chooseActs(p,[{t:'🎲 ارمي النرد',v:'roll'},{t:'🏗️ إدارة',c:'alt',v:'man'}]);
+  if(r==='man'){await manage(p);return playTurn(p,my);}
+ }
+ const [a,b]=await rollAnim();S.last=a+b;
+ setStatus(`${a} + ${b} = ${a+b}${a===b?' (دبلة! 🔥)':''}`);await sleep(450);
+ if(a===b){
+  dbl++;
+  if(dbl>=3){logm(`${p.name} جاب 3 دبل ورا بعض!`);await sendJail(p,'الشك في نزاهة النرد بعد 3 دبل ورا بعض');return;}
+  S.again=true;S.dbl=dbl;
+ }
+ await moveBy(p,a+b);
+ if(my!==RUN)return;
+ await land(p,a+b);
+ if(p.out||p.jail)S.again=false;
+ if(!S||S.over||my!==RUN)return;
+ refresh();
+ if(!p.cpu&&!p.out){
+  while(true){
+   const r=await chooseActs(p,[{t:S.again?'🎲 ارمي تاني (دبلة)':'✅ إنهاء الدور',v:'end'},{t:'🏗️ إدارة',c:'alt',v:'man'}]);
+   if(r==='man')await manage(p);else break;
+  }
+ }else if(!p.out){await sleep(600);await aiManage(p);await sleep(500);}
+}
+
+let ROOM=null,ROOT=null,NETOFF=[];
+function netSend(topic,data){
+ if(!NET.on||!ROOM)return;
+ try{ROOM.emit(topic,data).catch(()=>{});}catch(e){}
+}
+async function netOpen(){
+ try{ROOT=await window.claude.use('room');}catch(e){ROOT=null;}
+ return !!ROOT;
+}
+function netClose(){
+ NETOFF.forEach(f=>{try{f();}catch(e){}});NETOFF=[];
+ if(ROOM){try{ROOM.leave();}catch(e){}}
+ ROOM=null;NET.on=false;NET.host=false;NET.seat=-1;NET.pend.clear();
+}
+function inviteURL(){
+ const base=location.href.split('#')[0];
+ return base+'#room-'+NET.code.toLowerCase();
+}
+function newCode(){
+ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+ let s='';for(let i=0;i<4;i++)s+=c[Math.random()*c.length|0];
+ return s;
+}
+
+function takeOverHostDuty(){
+ if(!NET.on||!ROOM)return;
+ const nowHost=!!ROOM.isHost;
+ const prevHost=NET.host;
+ NET.host=nowHost;
+ if(nowHost&&!prevHost){
+  if(S&&!S.over){
+   const usedPeers=new Set(S.pl.map(x=>x.peer).filter(Boolean));
+   S.pl.forEach(p=>{
+    if(!p.cpu&&!p.peer){
+     const match=ROOM.peers().find(x=>x.peer&&!usedPeers.has(x.peer)&&x.presence&&x.presence.name===p.name)
+      ||ROOM.peers().find(x=>x.peer&&!usedPeers.has(x.peer));
+     if(match){p.peer=match.peer;usedPeers.add(match.peer);}
+    }
+   });
+   NET.seat=S.pl.findIndex(p=>p.peer===NET.peer);
+   logm('👑 تم توريث إدارة الغرفة تلقائياً لمواصلة اللعب بدون توقف');
+   netSend('st',snapshot());
+   RUN++;
+   turnLoop();
+  }else if(!S){
+   renderLobby();
+  }
+ }else if(!nowHost&&prevHost){
+  RUN++;
+ }
+}
+
+async function netJoin(code){
+ if(!ROOT&&!(await netOpen()))return 'unavailable';
+ try{ROOM=await ROOT.join('bk-'+code.toLowerCase());}catch(e){return 'failed';}
+ NET.on=true;
+ NET.code=code.toUpperCase();
+ NET.lobby=[];
+ NET.peer=ROOM.peerId||null;
+ NET.host=!!ROOM.isHost;
+
+ NETOFF.push(ROOM.onPeers(ch=>{
+  NET.peer=ROOM.peerId||NET.peer;
+  ch.left.forEach(p=>onPeerLeft(p.peer));
+  takeOverHostDuty();
+  if(!S)renderLobby();
+  else{
+   if(NET.host&&ch.joined&&ch.joined.length){
+    S.pl.forEach(p=>{
+     if(!p.cpu&&!p.peer){
+      const match=ch.joined.find(j=>j.presence&&j.presence.name===p.name);
+      if(match)p.peer=match.peer;
+     }
+    });
+    netSend('st',snapshot());
+   }
+   renderPanel();
+  }
+ },()=>{}));
+
+ NETOFF.push(ROOM.on('__host_promoted__',()=>{
+  takeOverHostDuty();
+ }));
+
+ ROOM.presence({name:SET.name||'لاعب',host:NET.host,t:Date.now()}).catch(()=>{});
+
+ NETOFF.push(ROOM.on('cm',m=>{if(NET.host)onCmd(m);}));
+ NETOFF.push(ROOM.on('an',m=>{
+  if(!NET.host)return;
+  const d=m.data||{},pd=NET.pend.get(d.id);
+  if(pd&&pd.peer===m.peer){NET.pend.delete(d.id);pd.res(d.v);}
+ }));
+ NETOFF.push(ROOM.on('st',m=>{
+  if(m.isMe||NET.host)return;
+  applySnap(m.data);
+ }));
+ NETOFF.push(ROOM.on('ev',m=>{
+  const d=m.data||{};if(m.isMe||!FX[d.k]||!S&&d.k!=='over')return;
+  if(d.k==='cut'||d.k==='card'||d.k==='over'){FX[d.k](...d.a);}else FX[d.k](...d.a);
+ }));
+ NETOFF.push(ROOM.on('pr',m=>{
+  if(m.data&&m.data.to===NET.peer)onPrompt(m.data);
+ }));
+ NETOFF.push(ROOM.on('rx',m=>{
+  const d=m.data||{};if(S)FX.rx(String(d.e||'🙂').slice(0,4),String(d.n||'').slice(0,14));
+ }));
+
+ setTimeout(()=>{
+  NET.peer=ROOM.peerId||NET.peer;
+  takeOverHostDuty();
+  if(!S)renderLobby();
+ },400);
+
+ return 'ok';
+}
+
+function onPeerLeft(peer){
+ if(!NET.host||!S)return;
+ const p=S.pl.find(x=>x.peer===peer&&!x.cpu);
+ if(!p)return;
+ p.cpu=true;
+ if(!p.name.includes('🤖'))p.name=p.name+' 🤖';
+ logm(`📴 ${p.name} خرج.. الكمبيوتر كمّل مكانه`);
+ for(const [id,pd] of NET.pend){
+  if(pd.peer===peer){
+   NET.pend.delete(id);
+   const b=(pd.btns||[]).find(x=>!x.d);
+   pd.res(pd.kind==='man'?'ok':b?b.v:1);
+  }
+ }
+ refresh();
+}
+
+async function onPrompt(d){
+ let v;
+ try{
+  if(d.kind==='ask')v=await ask((d.deed!==undefined?deedHTML(TILES[d.deed]):'')+d.html,d.btns);
+  else if(d.kind==='acts')v=await setActs(d.btns);
+  else if(d.kind==='man'){const me=S.pl[NET.seat];v=me?await manageUI(me,d.need||0,true):'ok';}
+ }catch(e){v=undefined;}
+ netSend('an',{id:d.id,v});
+}
+
+function renderLobby(){
+ if(!ROOM||S)return;
+ const peers=ROOM.peers().filter(p=>p.kind==='viewer').sort((a,b)=>(a.presence?.t||a.updatedAt||0)-(b.presence?.t||b.updatedAt||0));
+ NET.lobby=peers;
+ const humans=peers.slice(0,4);
+ const canControlStart=NET.host||humans.length>0;
+ $('#app').innerHTML=`<div class="setup"><div class="hero"><h1>لولاميزا</h1><div class="tag">لعب أونلاين مستقل — أي لاعب يقدر يبدأ</div></div>`+
+  `<div class="box"><h3 class="h">كود الغرفة</h3><div class="code" aria-label="كود الغرفة">${esc(NET.code)}</div>`+
+  `<p class="tip">ابعت اللينك ده لصحابك، وأي حد يدخل يقدر يبدأ الجيم حتى لو غبت:</p>`+
+  `<div class="linkbox"><input class="inp" id="lnk" readonly dir="ltr" value="${esc(inviteURL())}" aria-label="لينك الدعوة"><button class="btn sm" id="cpy">📋 انسخ</button></div></div>`+
+  `<div class="box"><h3 class="h">اللاعبين المتصلين (${humans.length})</h3><div class="prs">${humans.map((p,i)=>
+   `<div class="pr-row" style="--pcol:${PCOL[i]}"><span class="tkb" style="display:grid;place-items:center">${TOKENS[i].e}</span><b>${esc(String(p.presence.name).slice(0,14))}${p.isMe?' (أنت)':''}</b><span>${p.peer===ROOM.peerId&&NET.host?'👑 المضيف النشط':'🌐 متصل'}</span></div>`).join('')}</div></div>`+
+  (canControlStart?`<div class="box"><h3 class="h">كمبيوتر يكمّل العدد</h3><div class="row"><button class="btn alt sm" id="cpuM">➖</button><b id="cpuN" style="font-size:20px;min-width:2ch;text-align:center">${NET.cpus??0}</b><button class="btn alt sm" id="cpuP">➕</button></div></div>`+
+   `<button class="btn" id="startNet" style="font-size:20px;padding:14px">🎲 ابدأ اللعبة</button>`:'')+
+  `<button class="btn alt" id="leaveNet">خروج من الغرفة</button></div>`;
+ $('#leaveNet').onclick=()=>goMenu();
+ const cp=$('#cpy');if(cp)cp.onclick=()=>{
+  const u=inviteURL(),i=$('#lnk');
+  const fb=()=>{i.focus();i.select();toast('اتحدد اللينك.. انسخه بإيدك.');};
+  try{navigator.clipboard.writeText(u).then(()=>toast('اتنسخ اللينك ✅'),fb);}catch(e){fb();}
+ };
+ if(canControlStart){
+  const max=Math.max(0,4-humans.length);
+  NET.cpus=Math.min(NET.cpus??0,max);
+  if($('#cpuN'))$('#cpuN').textContent=NET.cpus;
+  if($('#cpuM'))$('#cpuM').onclick=()=>{NET.cpus=Math.max(0,(NET.cpus||0)-1);renderLobby();};
+  if($('#cpuP'))$('#cpuP').onclick=()=>{NET.cpus=Math.min(max,(NET.cpus||0)+1);renderLobby();};
+  if($('#startNet'))$('#startNet').onclick=()=>{
+   const hs=humans;
+   if(hs.length+(NET.cpus||0)<2){toast('محتاج لاعبين اتنين على الأقل: ضيف كمبيوتر أو استنى صاحبك.');return;}
+   NET.host=true;
+   ROOM.presence({name:SET.name||'لاعب',host:true,t:Date.now()}).catch(()=>{});
+   const cfg=hs.map(p=>({n:String(p.presence.name).slice(0,14),cpu:false,peer:p.peer}));
+   for(let i=0;i<(NET.cpus||0);i++)cfg.push({n:CPU_NAMES[i],cpu:true});
+   start(cfg);
+  };
+ }
+}
+function toast(t){
+ const e=document.createElement('div');e.className='toast';e.textContent=t;$('#layer').appendChild(e);setTimeout(()=>e.remove(),3200);
+}
+
+function heroHTML(sub){
+ return `<div class="menuhero"><i class="m-sun"></i><i class="m-pyr" style="left:6%;width:38%;height:48%"></i><i class="m-pyr" style="left:30%;width:52%;height:66%"></i><i class="m-pyr" style="right:4%;width:30%;height:36%"></i>`+
+  `<i class="m-nile"></i><span class="m-boat">⛵</span><span class="m-camel">🐫</span><span class="m-palm" style="left:3%">🌴</span><span class="m-palm" style="right:3%;font-size:46px">🌴</span>`+
+  [0,1,2,3,4,5].map(i=>`<span class="m-coin" style="left:${10+i*15}%;animation-delay:${i*.7}s">${i%2?'💰':'🪙'}</span>`).join('')+
+  `<h1>لولاميزا</h1><div class="m-sub">${sub||'النسخة المصرية'}</div></div>`;
+}
+function goMenu(){
+ netClose();RUN++;S=null;MAN=null;$('#layer').innerHTML='';stopAudio();
+ const saved=loadGame();
+ $('#app').innerHTML=`<div class="setup">${heroHTML('اشتري البلد.. وابني فنادق.. وادفع للجار!')}`+
+  `<div class="menubtns"><button class="btn big" id="mLocal">🎲 لعب محلي</button><button class="btn big alt" id="mNet">🌐 لعب أونلاين</button>`+
+  (saved?`<button class="btn big good" id="mResume">▶️ كمّل اللعبة اللي فاتت</button>`:'')+
+  `<div class="row2"><button class="btn alt" id="mHelp">❓ طريقة اللعب</button><button class="btn alt" id="mSet">⚙️ إعدادات</button></div></div>`+
+  `<p class="tip" style="text-align:center">🎵 الموسيقى والصوت من الزر العايم تحت على الشمال.</p></div>`;
+ $('#mLocal').onclick=localSetup;$('#mNet').onclick=netMenu;$('#mHelp').onclick=help;$('#mSet').onclick=settings;
+ const r=$('#mResume');if(r)r.onclick=()=>{S=saved;RUN++;renderApp();turnLoop();};
+}
+function localSetup(){
+ const cfg=[{n:SET.name||'أنا',cpu:false},{n:CPU_NAMES[0],cpu:true},{n:CPU_NAMES[1],cpu:true}];
+ const sync=()=>cfg.forEach((c,i)=>{const e=$('#nm'+i);if(e)c.n=e.value;});
+ const draw=()=>{
+  $('#app').innerHTML=`<div class="setup">${heroHTML('لعب محلي')}<div class="box"><h3 class="h">اللاعبين (${cfg.length})</h3><div class="prs">${cfg.map((c,i)=>
+   `<div class="pr-row" style="--pcol:${PCOL[i]}"><span class="tkb" style="display:grid;place-items:center">${TOKENS[i].e}</span><input type="text" id="nm${i}" value="${esc(c.n)}" maxlength="14" aria-label="اسم اللاعب ${i+1}"><div class="seg"><button data-s="${i}:h" class="${c.cpu?'':'on'}">بني آدم</button><button data-s="${i}:c" class="${c.cpu?'on':''}">كمبيوتر</button></div></div>`).join('')}</div>`+
+   `<div class="row" style="margin-top:10px">${cfg.length<4?'<button class="btn alt sm" id="addP">➕ لاعب</button>':''}${cfg.length>2?'<button class="btn alt sm" id="delP">➖ شيل لاعب</button>':''}</div></div>`+
+   `<div class="box"><p class="tip" style="margin:0">💡 كل واحد بيبدأ بـ ${money(START_CASH)}. اللاعبين "بني آدم" بيلعبوا بالدور على نفس الجهاز.</p></div>`+
+   `<button class="btn big" id="go">🎲 يلا نلعب!</button><button class="btn alt" id="back">رجوع</button></div>`;
+  $('#go').onclick=()=>{sync();cfg.forEach((c,i)=>{c.n=(c.n||'لاعب '+(i+1)).trim();});start(cfg);};
+  $('#back').onclick=goMenu;
+  document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{sync();const [i,k]=b.dataset.s.split(':');cfg[+i].cpu=k==='c';draw();});
+  const a=$('#addP');if(a)a.onclick=()=>{sync();cfg.push({n:CPU_NAMES[cfg.length]||'لاعب',cpu:true});draw();};
+  const d=$('#delP');if(d)d.onclick=()=>{sync();cfg.pop();draw();};
+ };draw();
+}
+function netMenu(){
+ $('#app').innerHTML=`<div class="setup">${heroHTML('لعب أونلاين')}<div class="box"><h3 class="h">اسمك</h3><input type="text" id="myName" class="inp" maxlength="14" value="${esc(SET.name||'')}" placeholder="اكتب اسمك" aria-label="اسمك"></div>`+
+  `<div class="box"><h3 class="h">اعمل غرفة</h3><p class="tip">هتاخد كود من 4 حروف، وتبعته لصحابك.. ويقدروا يلعبوا حتى لو خرجت.</p><button class="btn big" id="mk">👑 إنشاء غرفة</button></div>`+
+  `<div class="box"><h3 class="h">ادخل غرفة</h3><input type="text" id="cd" class="inp code-in" maxlength="4" placeholder="الكود" aria-label="كود الغرفة" autocapitalize="characters"><button class="btn big alt" id="jn" style="margin-top:8px">🚪 دخول</button></div>`+
+  `<p class="tip" id="netMsg" style="text-align:center"></p><button class="btn alt" id="back">رجوع</button></div>`;
+ const msg=t=>{const e=$('#netMsg');if(e)e.textContent=t;};
+ const nm=()=>{const v=($('#myName').value||'').trim();if(!v){msg('اكتب اسمك الأول.');return null;}SET.name=v;saveSet();return v;};
+ const go=async(code)=>{
+  if(!nm())return;msg('بيتوصّل...');
+  const r=await netJoin(code);
+  if(r==='ok')renderLobby();
+  else{netClose();msg('تعذر الاتصال بالغرفة حاليًا، جرب تاني.');}
+ };
+ $('#mk').onclick=()=>go(newCode());
+ $('#jn').onclick=()=>{const c=($('#cd').value||'').trim().toUpperCase();if(c.length!==4){msg('الكود 4 حروف.');return;}go(c);};
+ $('#back').onclick=goMenu;
+}
+function help(){
+ ask(`<h2>❓ طريقة اللعب</h2><p>1) ارمي النرد وامشي على اللوحة. لو نزلت على بلد من غير صاحب تقدر تشتريها.<br>2) لو نزلت على بلد حد تاني ماسكها: ادفع الإيجار.<br>3) كمّل كل البلاد اللي بنفس اللون وابني بيوت ثم فندق، والإيجار هيكبر جدًا.<br>4) كروت "حظك" و"الجمعية" بتتقرا بصوت. والمحكمة بتحاكمك لو اتقبض عليك.<br>5) لو فلّست: بتخرج. آخر واحد باقي بيكسب.<br>6) تقدر ترهن وتتاجر مع اللاعبين من زر "ممتلكاتي".</p>`,[{t:'تمام',v:1}]);
+}
+function settings(){
+ const draw=async()=>{
+  const r=await ask(`<h2>⚙️ إعدادات</h2><p>المؤثرات: <b>${SET.sound?'شغالة':'مقفولة'}</b> · المشاهد: <b>${SET.cuts?'شغالة':'مقفولة'}</b> · الصوت المنطوق: <b>${SET.voice?'شغال':'مقفول'}</b></p>`+
+   (('speechSynthesis' in window)?`<p class="tip">الصوت المنطوق بيعتمد على صوت عربي موجود في جهازك.</p>`:`<p class="tip">جهازك مش بيدعم الصوت المنطوق.</p>`),[
+   {t:SET.sound?'🔇 اقفل المؤثرات':'🔊 شغّل المؤثرات',c:'alt',v:'s'},
+   {t:SET.voice?'🗣️ اقفل الصوت المنطوق':'🗣️ شغّل الصوت المنطوق',c:'alt',v:'v'},
+   {t:SET.cuts?'🎬 اقفل المشاهد':'🎬 شغّل المشاهد',c:'alt',v:'c'},
+   {t:'🗣️ جرّب صوت القاضي',c:'alt',v:'j'},
+   ...(S?[{t:'🏠 القائمة الرئيسية',c:'bad',v:'m'}]:[]),{t:'رجوع',v:'x'}]);
+  if(r==='s'){SET.sound=!SET.sound;saveSet();draw();}
+  else if(r==='v'){SET.voice=!SET.voice;saveSet();draw();}
+  else if(r==='c'){SET.cuts=!SET.cuts;saveSet();draw();}
+  else if(r==='j'){say('حكمت المحكمة بحبس المتهم ثلاث أدوار مع الشغل والنفاذ.',VOICES.judge);draw();}
+  else if(r==='m'){goMenu();}
+ };draw();
+}
+
+function initMusicUI(){
+ const w=document.createElement('div');w.id='musWrap';
+ w.innerHTML='<div id="musPanel" hidden></div><button id="musBtn" aria-label="الموسيقى"></button>';
+ document.body.appendChild(w);
+ $('#musPanel').innerHTML=musPanelHTML();$('#musBtn').textContent=SET.music?'🎵':'🔇';
+ $('#musBtn').onclick=()=>{const p=$('#musPanel');p.hidden=!p.hidden;};
+ w.addEventListener('click',e=>{
+  const b=e.target.closest('[data-m]');if(!b)return;
+  const k=b.dataset.m;
+  if(k==='tog')setMusic(!SET.music);else if(k[0]==='t')setTrack(+k.slice(1));
+ });
+ w.addEventListener('input',e=>{if(e.target.id==='volR')setVol(+e.target.value);});
+}
+
+function start(cfg){
+ S={pl:cfg.map((c,i)=>({id:i,name:c.n,cpu:c.cpu,peer:c.peer||'',tok:TOKENS[i],cash:START_CASH,pos:0,jail:0,free:0,out:false})),
+  own:{},lv:{},mort:{},turn:0,pool:0,log:[],again:false,dbl:0,over:false,last:7,tip:TIPS[0],
+  deck:{ch:shuffle(CHANCE.map((_,i)=>i)),cc:shuffle(CHEST.map((_,i)=>i))}};
+ if(NET.on)NET.seat=S.pl.findIndex(p=>p.peer===NET.peer);
+ RUN++;renderApp();logm('🎲 اللعبة بدأت! بالتوفيق يا شباب.');
+ if(NET.on&&NET.host)netSend('st',snapshot());
+ turnLoop();
+}
+function inviteJoin(code){
+ $('#app').innerHTML=`<div class="setup">${heroHTML('اتدعيت لغرفة '+code)}<div class="box"><h3 class="h">اسمك</h3><input type="text" id="myName" class="inp" maxlength="14" value="${esc(SET.name||'')}" placeholder="اكتب اسمك" aria-label="اسمك"><button class="btn big" id="jn" style="margin-top:10px">🚪 ادخل الغرفة</button></div><p class="tip" id="netMsg" style="text-align:center"></p><button class="btn alt" id="back">القائمة الرئيسية</button></div>`;
+ const msg=t=>{const e=$('#netMsg');if(e)e.textContent=t;};
+ let busy=false;
+ const go=async()=>{
+  if(busy)return;const v=($('#myName').value||'').trim();if(!v){msg('اكتب اسمك الأول.');return;}
+  busy=true;SET.name=v;saveSet();msg('بيتوصّل...');
+  const r=await netJoin(code);
+  if(r==='ok')renderLobby();else{netClose();busy=false;msg('تعذر الاتصال بالغرفة حاليًا، جرب تاني.');}
+ };
+ $('#jn').onclick=go;$('#back').onclick=()=>{try{history.replaceState(null,'',location.pathname);}catch(e){}goMenu();};
+ if(SET.name)go();
+}
+function handleHash(){
+ const m=/^#room-([a-z0-9]{4})$/i.exec(location.hash||'');
+ if(!m||ROOM||S)return;inviteJoin(m[1].toUpperCase());
+}
+initMusicUI();
+goMenu();
+handleHash();
+window.addEventListener('hashchange',handleHash);
+</script>
+</body></html>
