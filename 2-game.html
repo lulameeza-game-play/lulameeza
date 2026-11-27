@@ -1744,6 +1744,7 @@ async function offerBuy(p,t){
  }
 }
 async function land(p,dice,opt={}){
+ if(!S)return;
  const t=TILES[p.pos];
  if(['prop','st','ut'].includes(t.t)){
   const o=ownerOf(t.i);
@@ -1770,11 +1771,14 @@ async function land(p,dice,opt={}){
 
 async function drawCard(p,type){
  const deck=S.deck[type],src=type==='ch'?CHANCE:CHEST,idx=deck.shift();deck.push(idx);const c=src[idx];
+
  await fx('card',type,c.t,p.name);
+ if(!S)return;
  logm(`${p.tok.e} ${p.name} سحب: ${c.t}`);
  await applyCard(p,c);
 }
 async function applyCard(p,c){
+ if(!S)return;
  const last=S.last||7;
  switch(c.k){
   case 'money':if(c.v>0)gain(p,c.v);else await charge(p,-c.v,'pool','كارت');break;
@@ -1952,7 +1956,7 @@ async function turnLoop(){
   if(!p)break;
   if(p.out){S.turn=(S.turn+1)%S.pl.length;continue;}
   save();refresh();
-  await playTurn(p,my);
+  try{await playTurn(p,my);}catch(e){if(S&&my===RUN)throw e;return;}
   if(my!==RUN||!S||S.over)return;
   if(!S.again)S.turn=(S.turn+1)%S.pl.length;
  }
