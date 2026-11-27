@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:dark}html,body{margin:0}body{font-size:14px}[hidden]{display:none!important}img{max-width:100%}</style>
+<html lang="ar" dir="rtl"><head><link rel="icon" href="data:,"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:dark}html,body{margin:0}body{font-size:14px}[hidden]{display:none!important}img{max-width:100%}</style>
 <title>لولاميزا</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0e1a2b">
@@ -768,7 +768,8 @@ function gridPos(i){
 }
 const axis=k=>k===1?0.75/12:k===11?(12-0.75)/12:(1.5+(k-2)+0.5)/12;
 
-const TOKENS=[{e:'🛺',n:'توكتوك'},{e:'🐫',n:'جمل'},{e:'🚐',n:'ميكروباص'},{e:'🧆',n:'طعمية'}];
+const TOKENS=[{e:'🛺',n:'توكتوك'},{e:'🐫',n:'جمل'},{e:'🚐',n:'ميكروباص'},{e:'🧆',n:'طعمية'},{e:'🦅',n:'نسر'},{e:'🫖',n:'براد شاي'},{e:'✈️',n:'طيارة'},{e:'🐎',n:'حصان'}];
+function assignToks(hs){const used=new Set(),out=hs.map(()=>-1);hs.forEach((p,i)=>{const w=p.presence&&p.presence.ti;if(Number.isInteger(w)&&w>=0&&w<TOKENS.length&&!used.has(w)){out[i]=w;used.add(w);}});hs.forEach((p,i)=>{if(out[i]<0){let k=0;while(used.has(k))k++;out[i]=k;used.add(k);}});return out;}
 const PCOL=['#e0405a','#2fbf8f','#e6a817','#5b8cff'];
 const CPU_NAMES=['الأسطى عوضين','الحاجة نوال','المعلم سيد','دكتور حسام'];
 const START_CASH=1500,SALARY=200,JAIL_FINE=50;
@@ -1552,7 +1553,7 @@ async function showTile(i){
 
 FX.card=(type,text,who)=>new Promise(res=>{
  playSfx('card');
- const html=`<div class="flip"><div class="card ${type==='ch'?'ch':'cc'}"><div><span class="ct">${type==='ch'?'🎲 حظك':'👵 جمعية'}${who?' · '+esc(who):''}</span>${esc(text)}</div></div></div>`;
+ const html=`<div class="flip"><div class="card ${type==='ch'?'ch':'cc'}"><div><span class="ct">${type==='ch'?'🎲 حظك':'👵 جمعية'}${who?' · '+esc(who):''}</span>${esc(text).replace(/[٠-٩]/g,d=>d.charCodeAt(0)-1632)}</div></div></div>`;
  const m=document.createElement('div');m.className='modal';
  m.innerHTML=`<div class="sheet">${html}<p class="tip" style="text-align:center">اضغط للمتابعة</p></div>`;$('#layer').appendChild(m);
  let d=false;const end=()=>{if(d)return;d=true;stopAudio();m.remove();res();};
@@ -1633,7 +1634,7 @@ function cut(scene,o={}){
 let syncT=null;
 function snapshot(){
  return {
-  pl:S.pl.map(p=>({id:p.id,name:p.name,cpu:p.cpu,cash:p.cash,pos:p.pos,jail:p.jail,free:p.free,out:p.out,peer:p.peer||''})),
+  pl:S.pl.map(p=>({ti:Math.max(0,TOKENS.indexOf(p.tok)),id:p.id,name:p.name,cpu:p.cpu,cash:p.cash,pos:p.pos,jail:p.jail,free:p.free,out:p.out,peer:p.peer||''})),
   own:S.own,lv:S.lv,mort:S.mort,turn:S.turn,pool:S.pool,over:S.over,log:S.log,again:S.again,dbl:S.dbl,last:S.last
  };
 }
@@ -1645,7 +1646,7 @@ function applySnap(d){
  if(!d||!d.pl)return;
  const first=!S;
  if(first)S={log:[],tip:TIPS[0],deck:{ch:shuffle(CHANCE.map((_,i)=>i)),cc:shuffle(CHEST.map((_,i)=>i))},mort:{},lv:{},own:{}};
- S.pl=d.pl.map(p=>Object.assign({},p,{tok:TOKENS[p.id]||TOKENS[0]}));
+ S.pl=d.pl.map(p=>Object.assign({},p,{tok:TOKENS[p.ti]||TOKENS[p.id]||TOKENS[0]}));
  S.own=d.own||{};S.lv=d.lv||{};S.mort=d.mort||{};S.turn=d.turn||0;S.pool=d.pool||0;S.over=!!d.over;
  if(Array.isArray(d.log))S.log=d.log.slice(0,40);
  if(typeof d.again==='boolean')S.again=d.again;
@@ -2094,7 +2095,7 @@ async function netJoin(code){
   takeOverHostDuty();
  }));
 
- ROOM.presence({name:SET.name||'لاعب',host:NET.host,t:Date.now()}).catch(()=>{});
+ ROOM.presence({name:SET.name||'لاعب',host:NET.host,t:Date.now(),ti:SET.ti}).catch(()=>{});
 
  NETOFF.push(ROOM.on('cm',m=>{if(NET.host)onCmd(m);}));
  NETOFF.push(ROOM.on('an',m=>{
@@ -2171,17 +2172,20 @@ function renderLobby(){
  const peers=ROOM.peers().filter(p=>p.kind==='viewer').sort((a,b)=>(a.presence?.t||a.updatedAt||0)-(b.presence?.t||b.updatedAt||0));
  NET.lobby=peers;
  const humans=peers.slice(0,4);
+ const TK=assignToks(humans),myIdx=humans.findIndex(x=>x.isMe);
  const canControlStart=NET.host||humans.length>0;
  $('#app').innerHTML=`<div class="setup"><div class="hero"><h1>لولاميزا</h1><div class="tag">لعب أونلاين مستقل — أي لاعب يقدر يبدأ</div></div>`+
   `<div class="box"><h3 class="h">كود الغرفة</h3><div class="code" aria-label="كود الغرفة">${esc(NET.code)}</div>`+
   `<p class="tip">ابعت اللينك ده لصحابك، وأي حد يدخل يقدر يبدأ الجيم حتى لو غبت:</p>`+
   `<div class="linkbox"><input class="inp" id="lnk" readonly dir="ltr" value="${esc(inviteURL())}" aria-label="لينك الدعوة"><button class="btn sm" id="cpy">📋 انسخ</button></div></div>`+
   `<div class="box"><h3 class="h">اللاعبين المتصلين (${humans.length})</h3><div class="prs">${humans.map((p,i)=>
-   `<div class="pr-row" style="--pcol:${PCOL[i]}"><span class="tkb" style="display:grid;place-items:center">${TOKENS[i].e}</span><b>${esc(String(p.presence.name).slice(0,14))}${p.isMe?' (أنت)':''}</b><span>${p.peer===ROOM.peerId&&NET.host?'👑 المضيف النشط':'🌐 متصل'}</span></div>`).join('')}</div></div>`+
+   `<div class="pr-row" style="--pcol:${PCOL[i]}"><span class="tkb" style="display:grid;place-items:center">${TOKENS[TK[i]].e}</span><b>${esc(String(p.presence.name).slice(0,14))}${p.isMe?' (أنت)':''}</b><span>${p.peer===ROOM.peerId&&NET.host?'👑 المضيف النشط':'🌐 متصل'}</span></div>`).join('')}</div></div>`+
+  (myIdx>=0?`<div class="box"><h3 class="h">اختار قطعتك</h3><div class="row" style="flex-wrap:wrap;justify-content:center">${TOKENS.map((tk,t)=>`<button class="btn alt sm tkpick" data-t="${t}" style="font-size:26px;${TK[myIdx]===t?'outline:3px solid var(--gold);':''}" ${TK.some((x,j)=>j!==myIdx&&x===t)?'disabled':''} title="${tk.n}">${tk.e}</button>`).join('')}</div></div>`:'')+
   (canControlStart?`<div class="box"><h3 class="h">كمبيوتر يكمّل العدد</h3><div class="row"><button class="btn alt sm" id="cpuM">➖</button><b id="cpuN" style="font-size:20px;min-width:2ch;text-align:center">${NET.cpus??0}</b><button class="btn alt sm" id="cpuP">➕</button></div></div>`+
    `<button class="btn" id="startNet" style="font-size:20px;padding:14px">🎲 ابدأ اللعبة</button>`:'')+
   `<button class="btn alt" id="leaveNet">خروج من الغرفة</button></div>`;
  $('#leaveNet').onclick=()=>goMenu();
+ document.querySelectorAll('.tkpick').forEach(b=>b.onclick=()=>{const t=+b.dataset.t;SET.ti=t;ROOM.presence({ti:t}).catch(()=>{});});
  const cp=$('#cpy');if(cp)cp.onclick=()=>{
   const u=inviteURL(),i=$('#lnk');
   const fb=()=>{i.focus();i.select();toast('اتحدد اللينك.. انسخه بإيدك.');};
@@ -2198,8 +2202,9 @@ function renderLobby(){
    if(hs.length+(NET.cpus||0)<2){toast('محتاج لاعبين اتنين على الأقل: ضيف كمبيوتر أو استنى صاحبك.');return;}
    NET.host=true;
    ROOM.presence({name:SET.name||'لاعب',host:true,t:Date.now()}).catch(()=>{});
-   const cfg=hs.map(p=>({n:String(p.presence.name).slice(0,14),cpu:false,peer:p.peer}));
-   for(let i=0;i<(NET.cpus||0);i++)cfg.push({n:CPU_NAMES[i],cpu:true});
+   const tk2=assignToks(hs),used2=new Set(tk2);
+   const cfg=hs.map((p,i)=>({n:String(p.presence.name).slice(0,14),cpu:false,peer:p.peer,k:tk2[i]}));
+   for(let i=0;i<(NET.cpus||0);i++){let k=0;while(used2.has(k))k++;used2.add(k);cfg.push({n:CPU_NAMES[i],cpu:true,k});}
    start(cfg);
   };
  }
@@ -2293,7 +2298,7 @@ function initMusicUI(){
 }
 
 function start(cfg){
- S={pl:cfg.map((c,i)=>({id:i,name:c.n,cpu:c.cpu,peer:c.peer||'',tok:TOKENS[i],cash:START_CASH,pos:0,jail:0,free:0,out:false})),
+ S={pl:cfg.map((c,i)=>({id:i,name:c.n,cpu:c.cpu,peer:c.peer||'',tok:TOKENS[c.k!==undefined?c.k:i],cash:START_CASH,pos:0,jail:0,free:0,out:false})),
   own:{},lv:{},mort:{},turn:0,pool:0,log:[],again:false,dbl:0,over:false,last:7,tip:TIPS[0],
   deck:{ch:shuffle(CHANCE.map((_,i)=>i)),cc:shuffle(CHEST.map((_,i)=>i))}};
  if(NET.on)NET.seat=S.pl.findIndex(p=>p.peer===NET.peer);
