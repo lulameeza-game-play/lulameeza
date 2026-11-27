@@ -320,6 +320,24 @@ body{overflow-x:hidden}
 .setup .box{animation:rowIn .5s ease both}
 @media (prefers-reduced-motion:reduce){.setup .hero h1,.setup .pr-row,.setup .box{animation:none!important}}
 </style>
+<style id="gfx4">
+.tile .nm{display:flex!important;font-size:1.55cqw;line-height:1.1;overflow-wrap:break-word;word-break:normal;hyphens:none;padding:0 .1cqw;text-shadow:0 .1cqw .2cqw #000a;color:#fff}
+.tile .ic{display:none}
+.tile.corner .ic{display:block}
+.tile.corner .nm{font-size:1.7cqw}
+@container (max-width:900px){
+ .tile .nm{display:flex!important;font-size:2.15cqw;font-weight:800;line-height:1.05}
+ .tile .ic{display:none}
+ .tile.corner .ic{display:block;font-size:3.4cqw}
+ .tile .pr{font-size:1.9cqw}
+ .tile .band{height:20%}
+}
+@container (max-width:520px){
+ .tile .nm{font-size:1.95cqw;letter-spacing:-.02em}
+ .tile .pr{font-size:2cqw}
+}
+</style>
+
 
 
 
