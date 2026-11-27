@@ -310,6 +310,17 @@ body{overflow-x:hidden}
 .tok{transition:left .3s cubic-bezier(.3,1.4,.5,1),top .3s cubic-bezier(.3,1.4,.5,1),filter .2s}
 @media (prefers-reduced-motion:reduce){.hs.new,.ht.new,.tile.hl{animation:none!important}.board{transform:none!important}}
 </style>
+<style id="gfx3">
+.setup .hero h1{font-size:clamp(46px,12vw,84px);background:linear-gradient(180deg,#fff2b0,#f2b632 55%,#b9801a);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 .06em 0 #5a3d03) drop-shadow(0 0 .5em #f2b63266);animation:heroFloat 4s ease-in-out infinite alternate}
+@keyframes heroFloat{to{transform:translateY(-6px) rotate(-1.5deg)}}
+.setup .code{letter-spacing:.35em;text-shadow:0 0 14px #f2b63288;background:linear-gradient(180deg,#0b1830,#13294a);border:2px dashed #f2b63288;border-radius:14px;padding:10px 16px}
+.setup .pr-row{background:linear-gradient(90deg,#ffffff0d,transparent);border-radius:12px;border-inline-start:4px solid var(--pcol);animation:rowIn .4s ease both}
+@keyframes rowIn{from{opacity:0;transform:translateX(14px)}}
+.setup .btn{transition:transform .15s,filter .15s}.setup .btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.setup .box{animation:rowIn .5s ease both}
+@media (prefers-reduced-motion:reduce){.setup .hero h1,.setup .pr-row,.setup .box{animation:none!important}}
+</style>
+
 
 
 <script>
@@ -1447,6 +1458,8 @@ function placeTokens(){
   if(p.out){if(el)el.remove();return;}
   if(!el){el=document.createElement('div');el.id='tk'+p.id;el.className='tok';el.innerHTML='<span>'+p.tok.e+'</span>';b.appendChild(el);}
   const [r,c]=gridPos(p.pos);
+  if(el.dataset.pos!==undefined&&el.dataset.pos!==String(p.pos)){try{const sp=el.firstElementChild;if(sp&&sp.animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches)sp.animate([{transform:'translateY(0) scale(1)'},{transform:'translateY(-2.2cqw) scale(1.25) rotate(-8deg)',offset:.45},{transform:'translateY(0) scale(.9,1.1)',offset:.8},{transform:'translateY(0) scale(1)'}],{duration:300,easing:'ease-out'});}catch(e){}}
+  el.dataset.pos=p.pos;
   el.style.left=axis(c)*100+'%';el.style.top=axis(r)*100+'%';el.style.setProperty('--pc',PCOL[p.id]);
   el.style.marginLeft=[-1.5,1.5,-1.5,1.5][p.id]+'cqw';el.style.marginTop=[-1.5,-1.5,1.5,1.5][p.id]+'cqw';
   el.classList.toggle('on',p===cur());
