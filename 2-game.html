@@ -1695,7 +1695,8 @@ FX.over=async(name,e,cash,cnt)=>{
  if(Date.now()-(NET.lastOver||0)<20000)return;NET.lastOver=Date.now();
  FX.conf(130);playSfx('fan');
  await FX.cut({scene:'win',title:`${name} كسب! 🏆`,lines:[{t:rnd(J.win),v:'host'}],m1:'#6a5a1d',m2:'#1a1405',force:true,ms:3500});
- await ask(`<h2>🏆 الفايز: ${e} ${esc(name)}</h2><p>خلّص اللعبة برصيد ${money(cash)} و ${num(cnt)} ملك. ألف مبروك!</p>`,[{t:NET.on?'رجوع للغرفة':'القائمة الرئيسية',v:1}]);
+ const ttl=cash>=4000?'👑 الحوت الكبير':cnt>=12?'🏘️ ملك الأملاك':cnt>=7?'🏗️ المعلم المقاول':cash>=1500?'💼 الناجي الشاطر':'😅 كسب بالعافية';
+ await ask(`<h2>🏆 الفايز: ${e} ${esc(name)}</h2><p style="font-size:20px;color:var(--gold);font-weight:800">${ttl}</p><p>خلّص اللعبة برصيد ${money(cash)} و ${num(cnt)} ملك. ألف مبروك!</p>`,[{t:NET.on?'رجوع للغرفة':'القائمة الرئيسية',v:1}]);
  if(NET.on&&!NET.host)endToLobby();
 };
 function rentFor(t,dice,o){
